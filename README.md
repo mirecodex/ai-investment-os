@@ -25,7 +25,9 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Market Brief harian | ✅ |
 | Telegram bot (long polling) | ✅ |
 | Persistensi (SQLite): rekomendasi, evidence, rule trigger, outcome, watchlist | ✅ |
-| Analis berbasis LLM, data provider nyata, Postgres/vector store | ⬜ port sudah tersedia |
+| Data live: harga EOD (Yahoo interim) + crawler RSS media Indonesia | ✅ `--live` |
+| Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
+| Analis berbasis LLM, Postgres/vector store | ⬜ port sudah tersedia |
 
 ## Quickstart
 
@@ -42,6 +44,19 @@ uv run investment-os analyze ANTM   # kasus konflik sinyal → rule R1 memaksa H
 uv run investment-os brief
 uv run investment-os history        # riwayat rekomendasi tersimpan (SQLite di var/)
 ```
+
+Mode live (harga EOD via Yahoo Finance + berita RSS, universe di
+`data/universe/lq45-demo.json`):
+
+```bash
+uv run investment-os --live brief
+uv run investment-os --live analyze BBCA
+```
+
+Catatan mode live: sumber gratis tidak menyediakan foreign flow dan
+fundamental — analis terkait otomatis mundur (recuse) dan komite berjalan
+dengan analis yang datanya tersedia. Sentimen berita memakai lexicon interim
+sampai news-intelligence berbasis LLM aktif.
 
 Menjalankan bot Telegram (butuh token dari @BotFather):
 

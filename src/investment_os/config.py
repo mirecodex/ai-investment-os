@@ -11,7 +11,12 @@ class Settings(BaseSettings):
     environment: str = "dev"
     log_json: bool = False
 
+    # "fixture" runs fully offline from the demo dataset; "live" pulls EOD
+    # prices (Yahoo interim) and RSS news for the configured universe.
+    data_mode: str = "fixture"
     fixtures_path: Path = _REPO_ROOT / "data" / "fixtures" / "idx_demo.json"
+    universe_path: Path = _REPO_ROOT / "data" / "universe" / "lq45-demo.json"
+    market_history_days: int = 120
     database_path: Path = _REPO_ROOT / "var" / "investment_os.db"
 
     telegram_bot_token: str | None = None

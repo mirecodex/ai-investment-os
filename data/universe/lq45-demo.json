@@ -1,0 +1,29 @@
+{
+  "macro": {
+    "bi_rate_pct": 5.25,
+    "usd_idr": 15850,
+    "commodities": {}
+  },
+  "sources": {
+    "Kontan": 0.85,
+    "CNBC Indonesia": 0.8,
+    "Detik Finance": 0.75,
+    "Antara Ekonomi": 0.8
+  },
+  "feeds": [
+    { "source": "Kontan", "url": "https://www.kontan.co.id/rss" },
+    { "source": "CNBC Indonesia", "url": "https://www.cnbcindonesia.com/market/rss" },
+    { "source": "Detik Finance", "url": "https://finance.detik.com/rss" },
+    { "source": "Antara Ekonomi", "url": "https://www.antaranews.com/rss/ekonomi.xml" }
+  ],
+  "tickers": [
+    { "ticker": "BBCA", "name": "Bank Central Asia", "sector": "Perbankan", "aliases": ["BCA", "Bank Central Asia"] },
+    { "ticker": "BBRI", "name": "Bank Rakyat Indonesia", "sector": "Perbankan", "aliases": ["BRI", "Bank Rakyat Indonesia"] },
+    { "ticker": "BMRI", "name": "Bank Mandiri", "sector": "Perbankan", "aliases": ["Bank Mandiri", "Mandiri"] },
+    { "ticker": "TLKM", "name": "Telkom Indonesia", "sector": "Telekomunikasi", "aliases": ["Telkom", "Telkom Indonesia"] },
+    { "ticker": "ASII", "name": "Astra International", "sector": "Otomotif & Konglomerasi", "aliases": ["Astra", "Astra International"] },
+    { "ticker": "ANTM", "name": "Aneka Tambang", "sector": "Pertambangan", "aliases": ["Antam", "Aneka Tambang"] },
+    { "ticker": "GOTO", "name": "GoTo Gojek Tokopedia", "sector": "Teknologi", "aliases": ["GoTo", "Gojek", "Tokopedia"] },
+    { "ticker": "UNVR", "name": "Unilever Indonesia", "sector": "Konsumer", "aliases": ["Unilever", "Unilever Indonesia"] }
+  ]
+}

@@ -29,7 +29,11 @@ class ForeignFlowAnalyst:
         self._recent = recent
 
     def is_relevant(self, snapshot: MarketSnapshot) -> bool:
-        return len(snapshot.bars) >= self._recent * 4
+        if len(snapshot.bars) < self._recent * 4:
+            return False
+        # Free interim price sources carry no foreign-flow column (all zeros);
+        # without real flow data this analyst has nothing to say.
+        return any(bar.net_foreign_bn_idr != 0 for bar in snapshot.bars)
 
     async def assess(self, snapshot: MarketSnapshot, brief: MarketBrief) -> AnalystOpinion:
         flows = [bar.net_foreign_bn_idr for bar in snapshot.bars][-self._window :]

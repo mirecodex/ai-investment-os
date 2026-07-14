@@ -32,6 +32,11 @@ def _plain(rendered_html: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="investment-os")
     parser.add_argument("--show-metrics", action="store_true", help="dump metrics after the run")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="pull live market data + RSS news instead of the offline fixture",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     analyze = sub.add_parser("analyze", help="run the investment committee for one ticker")
@@ -47,8 +52,24 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     settings = load_settings()
+    if args.live:
+        settings = settings.model_copy(update={"data_mode": "live"})
     configure_logging(json_output=settings.log_json)
-    container = build_container(settings)
+
+    kb = None
+    if settings.data_mode == "live":
+        from investment_os.knowledge.live import load_live_kb
+
+        kb = asyncio.run(
+            load_live_kb(settings.universe_path, history_days=settings.market_history_days)
+        )
+        if not kb.list_tickers():
+            print(
+                "peringatan: tidak ada data live yang berhasil diambil — "
+                "periksa koneksi/akses jaringan. Jalankan tanpa --live untuk mode fixture.",
+                file=sys.stderr,
+            )
+    container = build_container(settings, kb=kb)
 
     exit_code = 0
     if args.command == "analyze":

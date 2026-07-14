@@ -36,8 +36,10 @@ class Container:
     router: CommandRouter
 
 
-def build_container(settings: Settings) -> Container:
-    kb = load_fixture_kb(settings.fixtures_path)
+def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> Container:
+    """Wire the application; pass a prebuilt ``kb`` for live mode (async load)."""
+    if kb is None:
+        kb = load_fixture_kb(settings.fixtures_path)
 
     db = Database(settings.database_path)
     recommendations = SqliteRecommendationStore(db)
