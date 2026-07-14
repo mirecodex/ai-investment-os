@@ -1,9 +1,18 @@
 {
   "as_of": "2026-07-13T02:00:00+00:00",
   "index_change_pct": 0.6,
+  "index_series": {
+    "seed": 7,
+    "days": 120,
+    "start_price": 7200,
+    "drift_bps": 5,
+    "vol_bps": 70,
+    "flow": { "mean_bn": 0, "std_bn": 0, "recent_shift_bn": 0, "recent_days": 5 }
+  },
   "macro": {
     "bi_rate_pct": 5.25,
     "usd_idr": 15850,
+    "usd_idr_change_pct": 0.4,
     "commodities": { "batu bara": 1.8, "nikel": -0.9, "CPO": 0.4, "emas": 0.7 }
   },
   "sources": {

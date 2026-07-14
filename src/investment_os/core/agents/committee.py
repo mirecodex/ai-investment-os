@@ -13,6 +13,12 @@ from investment_os.domain import AnalystOpinion, Argument, ArgumentPoint, Side, 
 BUY_THRESHOLD = 0.25
 SELL_THRESHOLD = -0.25
 
+# Opinions inside this band are "no directional view". They still shape the
+# confidence engine's agreement factor, but they don't vote on direction —
+# otherwise every neutral supporting analyst dilutes a strong committee
+# signal toward HOLD by construction.
+NEUTRAL_BAND = 0.1
+
 
 def _points_for_side(opinions: list[AnalystOpinion], side: Side) -> list[ArgumentPoint]:
     wants_positive = side is Side.BULL
@@ -38,9 +44,14 @@ def build_case(opinions: list[AnalystOpinion], side: Side) -> Argument:
 
 
 def consensus_score(opinions: dict[str, AnalystOpinion], role_weights: dict[str, float]) -> float:
+    directional = {
+        role: opinion for role, opinion in opinions.items() if abs(opinion.score) > NEUTRAL_BAND
+    }
+    pool = directional or opinions
+
     numerator = 0.0
     denominator = 0.0
-    for role, opinion in opinions.items():
+    for role, opinion in pool.items():
         weight = role_weights.get(role, 1.0) * opinion.confidence
         numerator += opinion.score * weight
         denominator += weight

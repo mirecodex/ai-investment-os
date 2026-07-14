@@ -31,6 +31,8 @@ class PriceFeedError(RuntimeError):
 class PriceFeed(Protocol):
     async def daily_bars(self, symbol: str, *, days: int) -> list[PriceBar]: ...
 
+    async def index_bars(self, *, days: int) -> list[PriceBar]: ...
+
     async def index_change_pct(self) -> float: ...
 
 
@@ -91,9 +93,12 @@ class YahooPriceFeed:
         metrics.increment("market_bars_fetched", float(len(bars)), symbol=symbol.upper())
         return bars[-days:]
 
+    async def index_bars(self, *, days: int) -> list[PriceBar]:
+        payload = await self._fetch(self._index_symbol, days)
+        return parse_yahoo_chart(payload)[-days:]
+
     async def index_change_pct(self) -> float:
-        payload = await self._fetch(self._index_symbol, days=5)
-        bars = parse_yahoo_chart(payload)
+        bars = await self.index_bars(days=5)
         if len(bars) < 2:
             raise PriceFeedError("data indeks kurang dari 2 hari")
         prev, last = bars[-2].close, bars[-1].close

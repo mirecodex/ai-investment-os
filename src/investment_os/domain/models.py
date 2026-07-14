@@ -113,6 +113,8 @@ class Decision(BaseModel):
 class MacroSnapshot(BaseModel):
     bi_rate_pct: float
     usd_idr: float
+    usd_idr_change_pct: float = 0.0
+    # Commodity name -> recent %-change (batu bara, nikel, CPO, emas, ...)
     commodities: dict[str, float] = Field(default_factory=dict)
 
 

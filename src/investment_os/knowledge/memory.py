@@ -25,6 +25,7 @@ class InMemoryKnowledgeBase:
         self._market_news: list[CuratedNews] = []
         self._fundamentals: dict[str, FundamentalSnapshot] = {}
         self._index_change_pct = 0.0
+        self._index_bars: list[PriceBar] = []
 
     def register_ticker(
         self,
@@ -40,6 +41,9 @@ class InMemoryKnowledgeBase:
 
     def set_index_change_pct(self, value: float) -> None:
         self._index_change_pct = value
+
+    def set_index_bars(self, bars: list[PriceBar]) -> None:
+        self._index_bars = sorted(bars, key=lambda b: b.date)
 
     def add_news(self, items: list[CuratedNews]) -> None:
         for item in items:
@@ -65,7 +69,19 @@ class InMemoryKnowledgeBase:
             fundamentals=self._fundamentals.get(symbol),
             macro=self._macro,
             as_of=self._as_of,
+            index_bars=self._index_bars,
+            sector_returns=self._sector_returns(),
         )
+
+    def _sector_returns(self, window: int = 20) -> dict[str, float]:
+        """Average trailing return per sector across the whole universe."""
+        per_sector: dict[str, list[float]] = defaultdict(list)
+        for symbol, bars in self._bars.items():
+            if len(bars) <= window:
+                continue
+            trailing = bars[-1].close / bars[-window - 1].close - 1.0
+            per_sector[self._profiles[symbol].sector].append(trailing)
+        return {sector: sum(returns) / len(returns) for sector, returns in per_sector.items()}
 
     def market_overview(self) -> tuple[float, float, list[CuratedNews]]:
         net_flow = 0.0

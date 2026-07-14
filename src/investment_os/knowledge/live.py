@@ -59,7 +59,10 @@ async def build_live_kb(
     kb = InMemoryKnowledgeBase(as_of=now, macro=universe.macro)
 
     try:
-        kb.set_index_change_pct(await price_feed.index_change_pct())
+        index_bars = await price_feed.index_bars(days=history_days)
+        kb.set_index_bars(index_bars)
+        if len(index_bars) >= 2:
+            kb.set_index_change_pct((index_bars[-1].close / index_bars[-2].close - 1.0) * 100)
     except PriceFeedError as exc:
         log.warning("index_fetch_failed", error=repr(exc))
 

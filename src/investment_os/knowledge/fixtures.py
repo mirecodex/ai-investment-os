@@ -72,6 +72,8 @@ def load_fixture_kb(path: Path) -> InMemoryKnowledgeBase:
 
     kb = InMemoryKnowledgeBase(as_of=as_of, macro=MacroSnapshot.model_validate(payload["macro"]))
     kb.set_index_change_pct(float(payload["index_change_pct"]))
+    if "index_series" in payload:
+        kb.set_index_bars(_synthesize_bars(payload["index_series"], last_trading_day))
 
     sources = SourceRegistry()
     for name, reliability in payload["sources"].items():

@@ -3,6 +3,8 @@ from __future__ import annotations
 import datetime as dt
 from pathlib import Path
 
+import pytest
+
 from investment_os.knowledge.live import UniverseConfig, build_live_kb
 from investment_os.knowledge.ports import PriceBar
 from investment_os.pipelines.market import PriceFeedError
@@ -28,6 +30,20 @@ class FakePriceFeed:
                 low=99.0 + i,
                 close=100.5 + i,
                 volume=1e6,
+            )
+            for i in range(days)
+        ]
+
+    async def index_bars(self, *, days: int) -> list[PriceBar]:
+        base = dt.date(2026, 3, 2)
+        return [
+            PriceBar(
+                date=base + dt.timedelta(days=i),
+                open=7000.0 + i,
+                high=7010.0 + i,
+                low=6990.0 + i,
+                close=7005.0 + i,
+                volume=1e9,
             )
             for i in range(days)
         ]
@@ -61,8 +77,11 @@ async def test_live_kb_registers_universe_and_news() -> None:
     assert snapshot.fundamentals is None
     assert snapshot.news and snapshot.news[0].source == "Kontan"
 
+    assert len(snapshot.index_bars) == 60
     index_change, _, _ = kb.market_overview()
-    assert index_change == 0.8
+    # Derived from the last two fake index closes, not the 0.8% stub method.
+    expected = (7064.0 / 7063.0 - 1.0) * 100
+    assert index_change == pytest.approx(expected)
 
 
 async def test_dead_ticker_degrades_gracefully() -> None:

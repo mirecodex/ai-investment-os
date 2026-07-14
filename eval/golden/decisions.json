@@ -12,20 +12,19 @@
         "confidence_min": 0.65,
         "band": "HIGH",
         "requires_review": false,
-        "min_evidence": 5
+        "min_evidence": 7
       }
     },
     {
       "name": "antm-konflik-r1-forces-hold",
       "ticker": "ANTM",
-      "rationale": "Fundamental kuat vs berita negatif + heavy foreign sell: rule R1 wajib memaksa HOLD dan confidence turun ke bawah ambang review.",
+      "rationale": "Fundamental kuat vs berita negatif + heavy foreign sell: rule R1 wajib memaksa HOLD. Re-pinned saat komite penuh (7 analis): evidence lebih kaya menaikkan confidence di atas ambang review, jadi R3 tidak lagi wajib.",
       "expect": {
         "verdict": "HOLD",
-        "rules_include": ["R1", "R3"],
+        "rules_include": ["R1"],
         "rules_exclude": ["R2"],
-        "confidence_max": 0.6,
-        "requires_review": true,
-        "min_evidence": 5
+        "confidence_max": 0.65,
+        "min_evidence": 7
       }
     },
     {
@@ -42,11 +41,11 @@
     {
       "name": "sido-data-tipis-abstain",
       "ticker": "SIDO",
-      "rationale": "Riwayat harga pendek tanpa fundamental/berita/flow: semua analis mundur dan evidence gating (R2) wajib menghasilkan ABSTAIN, bukan tebakan.",
+      "rationale": "Riwayat harga pendek tanpa fundamental/berita/flow: analis inti mundur (hanya macro + rotasi sektor tersisa) dan evidence gating (R2) wajib menghasilkan ABSTAIN dengan flag review, bukan tebakan.",
       "expect": {
         "verdict": "ABSTAIN",
         "rules_include": ["R2"],
-        "band": "LOW",
+        "confidence_max": 0.6,
         "requires_review": true
       }
     }

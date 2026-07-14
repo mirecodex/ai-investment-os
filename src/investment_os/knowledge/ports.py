@@ -90,6 +90,9 @@ class MarketSnapshot(BaseModel):
     fundamentals: FundamentalSnapshot | None
     macro: MacroSnapshot
     as_of: dt.datetime
+    # Cross-sectional context the KB precomputes for quant/rotation analysts
+    index_bars: list[PriceBar] = []
+    sector_returns: dict[str, float] = {}
 
 
 class KnowledgeBase(Protocol):

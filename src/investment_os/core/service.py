@@ -22,6 +22,7 @@ from pydantic import BaseModel
 
 from investment_os.core.agents import committee
 from investment_os.core.agents.base import Analyst
+from investment_os.core.agents.manager import ResearchManager
 from investment_os.core.confidence import ConfidenceBreakdown, ConfidenceEngine
 from investment_os.core.decision import DecisionEngine
 from investment_os.core.decision.rules import DecisionFacts
@@ -87,6 +88,7 @@ class AnalysisService:
         self._analyst_timeout_s = analyst_timeout_s
         self._store = recommendation_store
         self._narrator = narrator
+        self._manager = ResearchManager(analysts)
         self._graph = self._build_graph()
 
     async def analyze(self, ticker: str) -> AnalysisResult:
@@ -188,12 +190,8 @@ class AnalysisService:
 
     async def _route_analysts(self, state: AnalysisState) -> Mapping[str, Any]:
         assert state.snapshot is not None
-        selected = [a.role for a in self._analysts if a.is_relevant(state.snapshot)]
-        skipped = [a.role for a in self._analysts if a.role not in selected]
-        note = f"selected: {', '.join(selected) or 'none'}"
-        if skipped:
-            note += f" · skipped: {', '.join(skipped)}"
-        return {"selected_roles": selected, "_audit_note": note}
+        routing = self._manager.route(state.snapshot)
+        return {"selected_roles": routing.selected, "_audit_note": routing.note}
 
     async def _run_analysts(self, state: AnalysisState) -> Mapping[str, Any]:
         assert state.snapshot is not None and state.market_brief is not None

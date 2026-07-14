@@ -17,7 +17,8 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Komponen | Status |
 |---|---|
 | Graph runtime (committee workflow, conditional edges, audit trail) | ✅ |
-| Analis deterministik: technical, fundamental, news, foreign flow | ✅ |
+| Analis deterministik: technical, fundamental, news, foreign flow, quant, macro, sector rotation | ✅ |
+| Research Manager: routing analis per ketersediaan data + kuorum | ✅ |
 | Bull/Bear case + konsensus komite | ✅ |
 | Decision Engine (rule R1/R1b/R2/R3, override audit) | ✅ |
 | Confidence Engine (evidence, freshness, agreement, kalibrasi) | ✅ |
