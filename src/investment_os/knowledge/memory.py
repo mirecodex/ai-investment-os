@@ -43,6 +43,34 @@ class InMemoryKnowledgeBase:
     def set_index_bars(self, bars: list[PriceBar]) -> None:
         self._index_bars = sorted(bars, key=lambda b: b.date)
 
+    def as_of_view(self, cutoff: dt.datetime) -> InMemoryKnowledgeBase:
+        # Point-in-time copy for backtesting: only data that existed at
+        # `cutoff` survives, so replayed decisions cannot look ahead.
+        view = InMemoryKnowledgeBase(as_of=cutoff, macro=self._macro)
+        cutoff_date = cutoff.date()
+
+        for symbol, profile in self._profiles.items():
+            bars = [bar for bar in self._bars.get(symbol, []) if bar.date <= cutoff_date]
+            fundamentals = self._fundamentals.get(symbol)
+            if fundamentals is not None and fundamentals.reported_at > cutoff:
+                fundamentals = None
+            view.register_ticker(profile, bars, fundamentals)
+
+        view.set_index_bars([bar for bar in self._index_bars if bar.date <= cutoff_date])
+        if len(view._index_bars) >= 2:
+            prev, last = view._index_bars[-2].close, view._index_bars[-1].close
+            view.set_index_change_pct((last / prev - 1.0) * 100)
+
+        deduped: list[CuratedNews] = []
+        seen: set[str] = set()
+        for items in [*self._news.values(), self._market_news]:
+            for item in items:
+                if item.published_at <= cutoff and item.ref_id not in seen:
+                    seen.add(item.ref_id)
+                    deduped.append(item)
+        view.add_news(deduped)
+        return view
+
     def add_news(self, items: list[CuratedNews]) -> None:
         for item in items:
             if item.tickers:
