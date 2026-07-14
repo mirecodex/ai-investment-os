@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import datetime as dt
+import signal
 
 from investment_os.app.container import Container, build_container
 from investment_os.config import Settings
@@ -39,7 +41,43 @@ async def run_bot(settings: Settings) -> None:
     scheduler = Scheduler(jobs)
 
     log.info("bot_started", data_mode=settings.data_mode, jobs=[j.name for j in jobs])
-    await asyncio.gather(run_polling(client, container.router), scheduler.run())
+    await _supervise(client, container, scheduler)
+
+
+async def _supervise(client: TelegramClient, container: Container, scheduler: Scheduler) -> None:
+    # One task dying (or SIGTERM from Docker) must bring the whole process
+    # down cleanly: cancel the rest, flush the HTTP client, close SQLite.
+    # A crash propagates after cleanup so the supervisor restarts us.
+    stop = asyncio.Event()
+    loop = asyncio.get_running_loop()
+    for signum in (signal.SIGTERM, signal.SIGINT):
+        with contextlib.suppress(NotImplementedError):
+            loop.add_signal_handler(signum, stop.set)
+
+    tasks = [
+        asyncio.create_task(run_polling(client, container.router), name="telegram-polling"),
+        asyncio.create_task(scheduler.run(), name="scheduler"),
+    ]
+    waiter = asyncio.create_task(stop.wait(), name="signal-waiter")
+    try:
+        done, _ = await asyncio.wait([*tasks, waiter], return_when=asyncio.FIRST_COMPLETED)
+        if waiter in done:
+            log.info("bot_stopping", reason="signal")
+            return
+        finished = done.pop()
+        error = finished.exception()
+        if error is not None:
+            log.error("bot_task_crashed", task=finished.get_name(), error=repr(error))
+            raise error
+        log.warning("bot_task_exited", task=finished.get_name())
+    finally:
+        waiter.cancel()
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, waiter, return_exceptions=True)
+        await client.close()
+        container.db.close()
+        log.info("bot_stopped")
 
 
 def _brief_job(settings: Settings, client: TelegramClient, container: Container) -> Job:
