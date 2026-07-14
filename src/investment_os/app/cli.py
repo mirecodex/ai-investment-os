@@ -44,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("brief", help="print today's market brief")
     sub.add_parser("tickers", help="list tickers in the knowledge base")
     sub.add_parser("serve-telegram", help="start the Telegram bot (long polling)")
+    sub.add_parser("health", help="wiring/database healthcheck (used by Docker)")
 
     history = sub.add_parser("history", help="show stored recommendations")
     history.add_argument("--ticker", default=None)
@@ -68,6 +69,21 @@ def main(argv: list[str] | None = None) -> int:
         from investment_os.app.runtime import run_bot
 
         asyncio.run(run_bot(settings))
+        return 0
+
+    if args.command == "health":
+        # Cheap and side-effect-free: verify wiring, KB fixture, and a DB
+        # round-trip. Always fixture mode so the probe never hits the network.
+        try:
+            probe = build_container(settings.model_copy(update={"data_mode": "fixture"}))
+            if not probe.kb.list_tickers():
+                raise RuntimeError("knowledge base kosong")
+            with probe.db.transaction() as conn:
+                conn.execute("SELECT 1")
+        except Exception as exc:
+            print(f"unhealthy: {exc}", file=sys.stderr)
+            return 1
+        print("ok")
         return 0
 
     if args.command == "eval":

@@ -125,6 +125,21 @@ Prinsip yang dijaga oleh struktur ini:
   dengan analis LLM adalah perubahan wiring di `app/container.py`, bukan
   perubahan core.
 
+## Deployment (Docker)
+
+```bash
+cp .env.example .env             # isi INVOS_TELEGRAM_BOT_TOKEN (+ LLM key opsional)
+make docker-up                   # build + jalankan bot (compose, restart otomatis)
+make docker-logs
+```
+
+Image berjalan non-root dengan healthcheck bawaan (`investment-os health`);
+SQLite hidup di volume `invos-var` sehingga rekomendasi, outcome, dan
+watchlist selamat dari restart/upgrade. Aktifkan data nyata dengan
+`INVOS_DATA_MODE=live` di compose/env. CI membangun image yang sama setelah
+lint, typecheck, test, dan golden gate — sesuai pipeline
+[docs/fase-4 deployment](docs/fase-4-engineering/08-deployment.md).
+
 ## Pengembangan
 
 - Python ≥ 3.11 · [uv](https://docs.astral.sh/uv/) · ruff · mypy (strict) · pytest

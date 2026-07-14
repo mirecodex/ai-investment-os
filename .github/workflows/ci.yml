@@ -31,3 +31,6 @@ jobs:
 
       - name: Golden regression gate
         run: investment-os eval
+
+      - name: Build container image
+        run: docker build -t investment-os:ci .

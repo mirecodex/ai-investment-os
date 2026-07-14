@@ -1,0 +1,16 @@
+services:
+  bot:
+    build: .
+    image: investment-os:latest
+    restart: unless-stopped
+    env_file: .env            # INVOS_TELEGRAM_BOT_TOKEN + optional LLM keys
+    environment:
+      INVOS_ENVIRONMENT: prod
+      # Uncomment for real market data + RSS news instead of the fixture:
+      # INVOS_DATA_MODE: live
+    volumes:
+      - invos-var:/app/var    # SQLite: recommendations, outcomes, watchlists
+    stop_grace_period: 30s
+
+volumes:
+  invos-var:
