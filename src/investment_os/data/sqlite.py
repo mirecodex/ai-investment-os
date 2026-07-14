@@ -194,6 +194,11 @@ class SqliteSubscriptions:
             cursor = conn.execute("DELETE FROM subscriptions WHERE user_id = ?", (user_id,))
         return cursor.rowcount > 0
 
+    def unsubscribe_chat(self, chat_id: int) -> bool:
+        with self._db.transaction() as conn:
+            cursor = conn.execute("DELETE FROM subscriptions WHERE chat_id = ?", (chat_id,))
+        return cursor.rowcount > 0
+
     def chat_ids(self) -> list[int]:
         with self._db.transaction() as conn:
             rows = conn.execute("SELECT chat_id FROM subscriptions ORDER BY created_at").fetchall()
