@@ -16,6 +16,8 @@ from investment_os.core.agents import (
     NewsAnalyst,
     TechnicalAnalyst,
 )
+from investment_os.core.explain.narrator import Narrator
+from investment_os.core.llm import LLMError
 from investment_os.core.ports import RecommendationStore
 from investment_os.core.service import AnalysisService
 from investment_os.data import (
@@ -27,6 +29,9 @@ from investment_os.data import (
 from investment_os.interfaces.telegram.router import CommandRouter
 from investment_os.knowledge.fixtures import load_fixture_kb
 from investment_os.knowledge.ports import KnowledgeBase
+from investment_os.llm import resolve_llm
+from investment_os.llm.promptstore import PromptStore
+from investment_os.observability import get_logger
 from investment_os.users.subscriptions import SubscriptionRepository
 from investment_os.users.watchlist import WatchlistRepository
 
@@ -53,6 +58,8 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
     watchlist = SqliteWatchlist(db)
     subscriptions = SqliteSubscriptions(db)
 
+    narrator = _build_narrator(settings)
+
     analysis = AnalysisService(
         kb,
         analysts=[
@@ -65,6 +72,7 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
         stale_after_days=settings.analysis_stale_after_days,
         low_confidence_threshold=settings.low_confidence_threshold,
         recommendation_store=recommendations,
+        narrator=narrator,
     )
 
     router = CommandRouter(analysis, watchlist, subscriptions)
@@ -78,3 +86,19 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
         recommendations=recommendations,
         router=router,
     )
+
+
+def _build_narrator(settings: Settings) -> Narrator | None:
+    log = get_logger(__name__)
+    if settings.llm_provider in ("off", "none", "disabled"):
+        return None
+    try:
+        llm = resolve_llm(settings.llm_provider, settings.llm_model)
+    except LLMError as exc:
+        # A broken LLM config degrades to deterministic output, never a crash.
+        log.warning("llm_setup_failed", error=str(exc))
+        return None
+    if llm is None:
+        log.info("llm_disabled", reason="no provider API key configured")
+        return None
+    return Narrator(llm, PromptStore(settings.prompts_path), max_tokens=settings.llm_max_tokens)

@@ -43,6 +43,10 @@ def render_report(report: AnalysisReport) -> str:
         f"<b>Alasan utama:</b> {_esc(report.headline)}",
     ]
 
+    if report.narrative:
+        lines.append("")
+        lines.append(f"<b>Pandangan CIO:</b> {_esc(report.narrative)}")
+
     if report.bull_case.points:
         lines.append("")
         lines.append("<b>Argumen bull:</b>")

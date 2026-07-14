@@ -34,8 +34,9 @@ class SqliteRecommendationStore:
                     run_id, ticker, company, sector, verdict, proposed_verdict,
                     confidence, confidence_band, requires_review, headline,
                     reasons_json, factors_json, audit_json,
-                    engine_version, as_of, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    engine_version, as_of, created_at,
+                    narrative, llm_version, prompt_version
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     run_id,
@@ -57,6 +58,9 @@ class SqliteRecommendationStore:
                     engine_version,
                     as_of.isoformat(),
                     dt.datetime.now(tz=dt.UTC).isoformat(),
+                    report.narrative,
+                    report.llm_version,
+                    report.prompt_version,
                 ),
             )
             rec_id = cursor.lastrowid

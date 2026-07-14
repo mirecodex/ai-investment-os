@@ -26,6 +26,7 @@ from investment_os.core.confidence import ConfidenceBreakdown, ConfidenceEngine
 from investment_os.core.decision import DecisionEngine
 from investment_os.core.decision.rules import DecisionFacts
 from investment_os.core.explain import AnalysisReport, build_report
+from investment_os.core.explain.narrator import Narrator
 from investment_os.core.graph import END, AnalysisState, Graph, NodeError
 from investment_os.core.market_intel import MarketBriefBuilder
 from investment_os.core.ports import RecommendationStore
@@ -73,6 +74,7 @@ class AnalysisService:
         low_confidence_threshold: float = 0.6,
         analyst_timeout_s: float = 30.0,
         recommendation_store: RecommendationStore | None = None,
+        narrator: Narrator | None = None,
     ) -> None:
         self._kb = kb
         self._analysts = analysts
@@ -84,6 +86,7 @@ class AnalysisService:
         self._low_confidence_threshold = low_confidence_threshold
         self._analyst_timeout_s = analyst_timeout_s
         self._store = recommendation_store
+        self._narrator = narrator
         self._graph = self._build_graph()
 
     async def analyze(self, ticker: str) -> AnalysisResult:
@@ -100,6 +103,7 @@ class AnalysisService:
                 raise
             assert final.market_brief is not None
             report = build_report(final)
+            report = await self._narrate(report, final.market_brief)
             await self._persist(report, run_id=run_id, as_of=final.as_of)
             metrics.increment("analysis_completed", verdict=report.decision.verdict.value)
             log.info(
@@ -111,6 +115,20 @@ class AnalysisService:
 
     def daily_brief(self, date: dt.date | None = None) -> MarketBrief:
         return self._brief_builder.build(date or dt.datetime.now(tz=dt.UTC).date())
+
+    async def _narrate(self, report: AnalysisReport, brief: MarketBrief) -> AnalysisReport:
+        if self._narrator is None:
+            return report
+        result = await self._narrator.narrate(report, brief)
+        if result is None:
+            return report
+        return report.model_copy(
+            update={
+                "narrative": result.text,
+                "llm_version": result.llm_version,
+                "prompt_version": result.prompt_version,
+            }
+        )
 
     async def _persist(self, report: AnalysisReport, *, run_id: str, as_of: dt.datetime) -> None:
         """Best-effort: a storage failure must never cost the user their answer."""

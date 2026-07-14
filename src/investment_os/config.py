@@ -31,6 +31,14 @@ class Settings(BaseSettings):
     analysis_stale_after_days: float = 7.0
     low_confidence_threshold: float = 0.6
 
+    # LLM narrative layer. Provider keys are read from their native env vars
+    # (ANTHROPIC_API_KEY, OPENAI_API_KEY, ...); by default the first
+    # configured provider wins. None disables the layer entirely.
+    llm_provider: str | None = None
+    llm_model: str | None = None
+    llm_max_tokens: int = 700
+    prompts_path: Path = _REPO_ROOT / "prompts"
+
 
 def load_settings() -> Settings:
     return Settings()

@@ -28,6 +28,10 @@ class AnalysisReport(BaseModel):
     confidence_factors: dict[str, float]
     degraded_roles: list[str] = Field(default_factory=list)
     audit_trail: list[AuditEvent] = Field(default_factory=list)
+    # LLM narrative (optional layer over the deterministic decision)
+    narrative: str | None = None
+    llm_version: str | None = None
+    prompt_version: str | None = None
 
 
 def build_report(state: AnalysisState) -> AnalysisReport:

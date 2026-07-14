@@ -85,6 +85,11 @@ MIGRATIONS: tuple[str, ...] = (
         created_at TEXT NOT NULL
     );
     """,
+    """
+    ALTER TABLE recommendations ADD COLUMN narrative TEXT;
+    ALTER TABLE recommendations ADD COLUMN llm_version TEXT;
+    ALTER TABLE recommendations ADD COLUMN prompt_version TEXT;
+    """,
 )
 
 

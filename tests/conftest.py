@@ -59,5 +59,6 @@ def container(tmp_path_factory: pytest.TempPathFactory) -> Container:
         fixtures_path=FIXTURE_PATH,
         database_path=tmp_path_factory.mktemp("db") / "test.db",
         telegram_bot_token=None,
+        llm_provider="off",  # hermetic: never pick up ambient provider keys
     )
     return build_container(settings)

@@ -27,8 +27,9 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Persistensi (SQLite): rekomendasi, evidence, rule trigger, outcome, watchlist | ✅ |
 | Data live: harga EOD (Yahoo interim) + crawler RSS media Indonesia | ✅ `--live` |
 | Scheduler WIB: brief harian otomatis (`/subscribe`) + refresh KB live | ✅ |
+| Layer LLM multi-provider: narasi CIO + numeric guard + prompt registry | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
-| Analis berbasis LLM, Postgres/vector store | ⬜ port sudah tersedia |
+| Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
 
 ## Quickstart
 
@@ -58,6 +59,26 @@ Catatan mode live: sumber gratis tidak menyediakan foreign flow dan
 fundamental — analis terkait otomatis mundur (recuse) dan komite berjalan
 dengan analis yang datanya tersedia. Sentimen berita memakai lexicon interim
 sampai news-intelligence berbasis LLM aktif.
+
+### Narasi CIO berbasis LLM (opsional, multi-provider)
+
+Set salah satu API key di `.env` (lihat `.env.example`) dan setiap analisis
+mendapat paragraf "Pandangan CIO" yang ditulis LLM — dijaga oleh *numeric
+guard* (angka yang tidak bersumber dari evidence → narasi ditolak) dan tidak
+pernah mengubah keputusan komite:
+
+```
+ANTHROPIC_API_KEY / OPENAI_API_KEY / GOOGLE_API_KEY / XAI_API_KEY /
+DEEPSEEK_API_KEY / DASHSCOPE_API_KEY / ZHIPU_API_KEY / MINIMAX_API_KEY /
+OPENROUTER_API_KEY ...
+```
+
+Provider pertama yang punya key dipakai; paksa dengan `INVOS_LLM_PROVIDER`,
+ganti model dengan `INVOS_LLM_MODEL`. Prompt tersimpan berversi di
+`prompts/` dan versi prompt + model dicatat pada tiap rekomendasi. Untuk
+Anthropic, pasang extra: `uv pip install -e ".[anthropic]"`. Kegagalan LLM
+(kunci salah, provider down, guard menolak) selalu jatuh kembali ke output
+deterministik.
 
 Menjalankan bot Telegram (butuh token dari @BotFather):
 
