@@ -1,11 +1,3 @@
-"""Shared domain types.
-
-Schemas follow docs/fase-2-ai-architecture (agent specifications, LangGraph
-state) and docs/fase-3-data-platform/07-database-vector-schema.md. Everything
-that crosses an agent or interface boundary is a validated model, never a
-loose dict.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

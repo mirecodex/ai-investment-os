@@ -1,12 +1,3 @@
-"""News intelligence pipeline: raw articles in, curated evidence out.
-
-Implements the curation stages from docs/fase-3-data-platform/03: normalize →
-dedup (exact + near-duplicate) → source scoring → importance → knowledge base.
-Crawlers/providers stay outside this module; they only need to produce
-``RawNewsItem``. The AI layer never sees anything that didn't pass through
-here.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

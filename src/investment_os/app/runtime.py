@@ -1,12 +1,3 @@
-"""Long-running bot process: update polling + scheduled jobs, one event loop.
-
-Jobs:
-- ``daily-brief`` — pre-market Market Brief to all subscribers (WIB, trading
-  days only).
-- ``kb-refresh`` — live mode only: rebuild the knowledge base from feeds and
-  hot-swap it; a failed refresh keeps serving the previous snapshot.
-"""
-
 from __future__ import annotations
 
 import asyncio

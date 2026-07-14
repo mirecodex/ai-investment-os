@@ -1,5 +1,3 @@
-"""Shared quantitative helpers used by deterministic analysts."""
-
 from __future__ import annotations
 
 import math

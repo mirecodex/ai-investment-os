@@ -1,11 +1,3 @@
-"""LLM port.
-
-Core depends on this protocol only; concrete providers live in
-``investment_os.llm``. The committee's decisions never depend on an LLM —
-language models add narrative reasoning on top of rule-gated verdicts
-(docs/fase-2: "LLM = reasoning, Decision Engine = guardrail").
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

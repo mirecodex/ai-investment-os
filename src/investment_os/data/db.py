@@ -1,12 +1,3 @@
-"""SQLite connection + forward-only migrations.
-
-SQLite keeps Tahap 0 deployable anywhere with zero infrastructure; the store
-classes speak plain SQL through this thin wrapper, so a Postgres variant is a
-new module implementing the same ports — not a refactor. Access is serialized
-with a lock: correctness first, connection pooling when a real load profile
-exists.
-"""
-
 from __future__ import annotations
 
 import sqlite3

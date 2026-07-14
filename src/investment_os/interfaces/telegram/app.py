@@ -1,5 +1,3 @@
-"""Long-polling loop: Bot API updates in, router replies out."""
-
 from __future__ import annotations
 
 from investment_os.interfaces.telegram.botapi import TelegramClient

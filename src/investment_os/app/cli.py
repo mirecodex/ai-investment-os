@@ -1,11 +1,3 @@
-"""CLI entry points.
-
-``investment-os analyze BBCA`` and ``investment-os brief`` run the full
-committee offline against the fixture knowledge base — the fastest way to see
-the engine work end to end. ``investment-os serve-telegram`` starts the bot
-(requires INVOS_TELEGRAM_BOT_TOKEN).
-"""
-
 from __future__ import annotations
 
 import argparse

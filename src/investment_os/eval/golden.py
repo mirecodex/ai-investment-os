@@ -1,12 +1,3 @@
-"""Golden set schema.
-
-A golden case pins the committee's behavior on a frozen scenario: expected
-verdict, which rules must (not) fire, confidence bounds. Cases live as JSON
-under ``eval/golden/`` and act as the regression gate from
-docs/fase-5-ai-quality/01-evaluation-framework.md — a prompt, rule, or
-heuristic change that flips a case fails CI and must be justified.
-"""
-
 from __future__ import annotations
 
 import json

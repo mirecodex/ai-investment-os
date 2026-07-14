@@ -1,11 +1,3 @@
-"""Assemble a knowledge base from live feeds.
-
-The live path reuses the exact same ``InMemoryKnowledgeBase`` the fixture
-path produces — analysts cannot tell the difference, which is the point of
-the port. Per-ticker failures degrade to a warning; fundamentals are absent
-until the fundamental pipeline lands, so that analyst recuses itself.
-"""
-
 from __future__ import annotations
 
 import asyncio

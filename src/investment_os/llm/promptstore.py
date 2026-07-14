@@ -1,11 +1,3 @@
-"""Versioned prompt registry.
-
-Prompts are files named ``<name>@v<version>.md`` under ``prompts/`` — reviewed
-in PRs like code, referenced by version in stored recommendations, never
-inline strings (docs/fase-6, coding standards: "prompt sebagai artefak
-berversi").
-"""
-
 from __future__ import annotations
 
 import re

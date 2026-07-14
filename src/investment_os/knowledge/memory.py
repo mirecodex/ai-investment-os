@@ -1,5 +1,3 @@
-"""In-memory knowledge base used for the offline demo and tests."""
-
 from __future__ import annotations
 
 import datetime as dt

@@ -1,14 +1,3 @@
-"""Provider registry: pick an LLM from whichever API key is configured.
-
-Selection order:
-1. Explicit ``INVOS_LLM_PROVIDER`` (errors loudly if its key is missing).
-2. Otherwise, the first provider in ``PROVIDERS`` whose env key is set.
-3. Otherwise ``None`` — the system runs fully deterministic, no narrative.
-
-Default model IDs are reasonable snapshots per provider and WILL age;
-override with ``INVOS_LLM_MODEL`` rather than editing code.
-"""
-
 from __future__ import annotations
 
 import os

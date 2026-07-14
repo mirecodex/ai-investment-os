@@ -1,11 +1,3 @@
-"""Bull/Bear synthesis and committee consensus.
-
-The committee never invents claims: every argument point is lifted from an
-analyst opinion and carries that opinion's evidence. Consensus weighs each
-analyst by role weight times self-reported confidence, so a hesitant analyst
-moves the needle less than a confident one.
-"""
-
 from __future__ import annotations
 
 from investment_os.domain import AnalystOpinion, Argument, ArgumentPoint, Side, Verdict

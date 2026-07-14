@@ -1,16 +1,3 @@
-"""Watchlist alerts: notify only on material change.
-
-The alert job re-runs the committee for every watchlisted ticker after
-market close and compares against the last alerted state. "Material" is
-deliberately narrow (docs/fase-4, Telegram UX: no notification spam):
-
-- the verdict changed, or
-- a rule fires that wasn't firing before (new gating/override).
-
-Confidence drift alone never alerts. The first run for a ticker seeds state
-silently — deploying the bot must not blast BUY/HOLD messages to everyone.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

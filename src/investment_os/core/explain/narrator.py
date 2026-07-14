@@ -1,11 +1,3 @@
-"""CIO narrative: LLM-written reasoning on top of a rule-gated decision.
-
-The narrator explains; it never decides. Its output is validated by the
-numeric guard and discarded on any violation or provider failure — a broken
-LLM degrades the product to the deterministic template, never to silence or
-to invented numbers.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
