@@ -24,6 +24,7 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | News pipeline (dedup, near-dup, reliability & importance scoring) | ✅ |
 | Market Brief harian | ✅ |
 | Telegram bot (long polling) | ✅ |
+| Persistensi (SQLite): rekomendasi, evidence, rule trigger, outcome, watchlist | ✅ |
 | Analis berbasis LLM, data provider nyata, Postgres/vector store | ⬜ port sudah tersedia |
 
 ## Quickstart
@@ -39,6 +40,7 @@ Contoh langsung:
 ```bash
 uv run investment-os analyze ANTM   # kasus konflik sinyal → rule R1 memaksa HOLD
 uv run investment-os brief
+uv run investment-os history        # riwayat rekomendasi tersimpan (SQLite di var/)
 ```
 
 Menjalankan bot Telegram (butuh token dari @BotFather):
@@ -57,6 +59,7 @@ core/                 service (graph wiring) · agents · decision · confidence
                       explain · market_intel      ← tidak mengimpor interfaces
         │
 knowledge/            port KnowledgeBase + implementasi (in-memory/fixture)
+data/                 persistensi SQLite (rekomendasi, outcome, watchlist)
 pipelines/            kurasi data (news: dedup → scoring → KB)
 observability/        structlog + metrics registry (run_id per analisis)
 app/                  composition root + CLI

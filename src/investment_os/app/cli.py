@@ -41,6 +41,10 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("tickers", help="list tickers in the knowledge base")
     sub.add_parser("serve-telegram", help="start the Telegram bot (long polling)")
 
+    history = sub.add_parser("history", help="show stored recommendations")
+    history.add_argument("--ticker", default=None)
+    history.add_argument("--limit", type=int, default=10)
+
     args = parser.parse_args(argv)
     settings = load_settings()
     configure_logging(json_output=settings.log_json)
@@ -59,6 +63,19 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "tickers":
         for profile in container.kb.list_tickers():
             print(f"{profile.ticker}  {profile.name} ({profile.sector})")
+    elif args.command == "history":
+        records = container.recommendations.history(args.ticker, limit=args.limit)
+        if not records:
+            print("Belum ada rekomendasi tersimpan.")
+        for record in records:
+            rules = (
+                f" rules={','.join(record.triggered_rule_ids)}" if record.triggered_rule_ids else ""
+            )
+            print(
+                f"#{record.id} {record.created_at:%Y-%m-%d %H:%M} {record.ticker} "
+                f"{record.verdict.value} ({record.confidence * 100:.0f}% "
+                f"{record.confidence_band}){rules} [{record.engine_version}]"
+            )
     elif args.command == "serve-telegram":
         token = settings.telegram_bot_token
         if not token:

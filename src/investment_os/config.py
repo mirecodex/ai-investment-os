@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     log_json: bool = False
 
     fixtures_path: Path = _REPO_ROOT / "data" / "fixtures" / "idx_demo.json"
+    database_path: Path = _REPO_ROOT / "var" / "investment_os.db"
 
     telegram_bot_token: str | None = None
     telegram_poll_timeout_s: int = 30

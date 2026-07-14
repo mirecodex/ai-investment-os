@@ -28,6 +28,7 @@ from investment_os.core.decision.rules import DecisionFacts
 from investment_os.core.explain import AnalysisReport, build_report
 from investment_os.core.graph import END, AnalysisState, Graph, NodeError
 from investment_os.core.market_intel import MarketBriefBuilder
+from investment_os.core.ports import RecommendationStore
 from investment_os.domain import (
     AnalystOpinion,
     Argument,
@@ -42,6 +43,10 @@ from investment_os.knowledge.ports import KnowledgeBase
 from investment_os.observability import bind_run_context, get_logger, metrics
 
 log = get_logger(__name__)
+
+# Stamped onto every stored recommendation; becomes the model/prompt version
+# pair once LLM analysts land (docs/fase-3, recommendations schema).
+ENGINE_VERSION = "heuristic-0.1.0"
 
 
 class TickerNotFoundError(LookupError):
@@ -67,6 +72,7 @@ class AnalysisService:
         stale_after_days: float = 7.0,
         low_confidence_threshold: float = 0.6,
         analyst_timeout_s: float = 30.0,
+        recommendation_store: RecommendationStore | None = None,
     ) -> None:
         self._kb = kb
         self._analysts = analysts
@@ -77,11 +83,12 @@ class AnalysisService:
         self._stale_after_days = stale_after_days
         self._low_confidence_threshold = low_confidence_threshold
         self._analyst_timeout_s = analyst_timeout_s
+        self._store = recommendation_store
         self._graph = self._build_graph()
 
     async def analyze(self, ticker: str) -> AnalysisResult:
         symbol = ticker.strip().upper()
-        with bind_run_context(ticker=symbol):
+        with bind_run_context(ticker=symbol) as run_id:
             log.info("analysis_started")
             state = AnalysisState(ticker=symbol, as_of=dt.datetime.now(tz=dt.UTC))
             try:
@@ -93,6 +100,7 @@ class AnalysisService:
                 raise
             assert final.market_brief is not None
             report = build_report(final)
+            await self._persist(report, run_id=run_id, as_of=final.as_of)
             metrics.increment("analysis_completed", verdict=report.decision.verdict.value)
             log.info(
                 "analysis_completed",
@@ -103,6 +111,23 @@ class AnalysisService:
 
     def daily_brief(self, date: dt.date | None = None) -> MarketBrief:
         return self._brief_builder.build(date or dt.datetime.now(tz=dt.UTC).date())
+
+    async def _persist(self, report: AnalysisReport, *, run_id: str, as_of: dt.datetime) -> None:
+        """Best-effort: a storage failure must never cost the user their answer."""
+        if self._store is None:
+            return
+        try:
+            rec_id = await asyncio.to_thread(
+                self._store.save,
+                report,
+                run_id=run_id,
+                engine_version=ENGINE_VERSION,
+                as_of=as_of,
+            )
+            log.info("recommendation_stored", rec_id=rec_id)
+        except Exception:
+            metrics.increment("recommendation_store_failures")
+            log.exception("recommendation_store_failed")
 
     # -- graph nodes ---------------------------------------------------------
 

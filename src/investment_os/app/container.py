@@ -16,11 +16,12 @@ from investment_os.core.agents import (
     NewsAnalyst,
     TechnicalAnalyst,
 )
+from investment_os.core.ports import RecommendationStore
 from investment_os.core.service import AnalysisService
+from investment_os.data import Database, SqliteRecommendationStore, SqliteWatchlist
 from investment_os.interfaces.telegram.router import CommandRouter
 from investment_os.knowledge.fixtures import load_fixture_kb
 from investment_os.knowledge.ports import KnowledgeBase
-from investment_os.users import InMemoryWatchlist
 from investment_os.users.watchlist import WatchlistRepository
 
 
@@ -28,13 +29,19 @@ from investment_os.users.watchlist import WatchlistRepository
 class Container:
     settings: Settings
     kb: KnowledgeBase
+    db: Database
     analysis: AnalysisService
     watchlist: WatchlistRepository
+    recommendations: RecommendationStore
     router: CommandRouter
 
 
 def build_container(settings: Settings) -> Container:
     kb = load_fixture_kb(settings.fixtures_path)
+
+    db = Database(settings.database_path)
+    recommendations = SqliteRecommendationStore(db)
+    watchlist = SqliteWatchlist(db)
 
     analysis = AnalysisService(
         kb,
@@ -47,10 +54,16 @@ def build_container(settings: Settings) -> Container:
         min_evidence=settings.analysis_min_evidence,
         stale_after_days=settings.analysis_stale_after_days,
         low_confidence_threshold=settings.low_confidence_threshold,
+        recommendation_store=recommendations,
     )
 
-    watchlist = InMemoryWatchlist()
     router = CommandRouter(analysis, watchlist)
     return Container(
-        settings=settings, kb=kb, analysis=analysis, watchlist=watchlist, router=router
+        settings=settings,
+        kb=kb,
+        db=db,
+        analysis=analysis,
+        watchlist=watchlist,
+        recommendations=recommendations,
+        router=router,
     )

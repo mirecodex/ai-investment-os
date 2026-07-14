@@ -54,6 +54,10 @@ def make_opinion(
 
 
 @pytest.fixture(scope="session")
-def container() -> Container:
-    settings = Settings(fixtures_path=FIXTURE_PATH, telegram_bot_token=None)
+def container(tmp_path_factory: pytest.TempPathFactory) -> Container:
+    settings = Settings(
+        fixtures_path=FIXTURE_PATH,
+        database_path=tmp_path_factory.mktemp("db") / "test.db",
+        telegram_bot_token=None,
+    )
     return build_container(settings)
