@@ -1,5 +1,9 @@
 # AI Investment OS — IDX Edition
 
+[![CI](https://github.com/mirecodex/ai-investment-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mirecodex/ai-investment-os/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
+[![Changelog](https://img.shields.io/badge/changelog-v0.1.0-informational)](CHANGELOG.md)
+
 AI investment research platform untuk pasar saham Indonesia (BEI/IDX).
 Bukan trading bot: sistem mengumpulkan data lewat pipeline, menjalankan
 *Investment Committee* multi-analis, membatasi keputusan dengan rule engine,
@@ -11,8 +15,12 @@ Keputusan arsitektur tercatat di [`docs/adr/`](docs/adr/).
 
 ## Status
 
-Tahap 0 → M3 (lihat [milestones](docs/fase-6-delivery/04-milestones.md)):
-fondasi core berjalan penuh secara offline di atas fixture knowledge base.
+**v0.1.0** — milestone M0–M3 selesai (lihat
+[milestones](docs/fase-6-delivery/04-milestones.md) dan
+[CHANGELOG](CHANGELOG.md)). Seluruh gerbang CI hijau: lint, typecheck
+strict, test suite, golden regression gate, dan build image kontainer.
+Sistem berjalan penuh offline di atas fixture, dan opsional live via
+`--live`.
 
 | Komponen | Status |
 |---|---|
