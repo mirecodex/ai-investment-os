@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     telegram_bot_token: str | None = None
     telegram_poll_timeout_s: int = 30
 
+    # Daily Market Brief broadcast (WIB wall clock, trading days only)
+    brief_time_wib: str = "07:30"
+    # Live-mode KB rebuild cadence for the long-running bot
+    refresh_interval_minutes: int = 60
+
     analysis_min_evidence: int = 3
     analysis_stale_after_days: float = 7.0
     low_confidence_threshold: float = 0.6

@@ -167,6 +167,35 @@ class SqliteRecommendationStore:
         return [(row["confidence"], row["actual_return"]) for row in rows]
 
 
+class SqliteSubscriptions:
+    def __init__(self, db: Database) -> None:
+        self._db = db
+
+    def subscribe(self, user_id: str, chat_id: int) -> bool:
+        now = dt.datetime.now(tz=dt.UTC).isoformat()
+        with self._db.transaction() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO users (user_id, created_at) VALUES (?, ?)",
+                (user_id, now),
+            )
+            cursor = conn.execute(
+                "INSERT OR IGNORE INTO subscriptions (user_id, chat_id, created_at)"
+                " VALUES (?, ?, ?)",
+                (user_id, chat_id, now),
+            )
+        return cursor.rowcount > 0
+
+    def unsubscribe(self, user_id: str) -> bool:
+        with self._db.transaction() as conn:
+            cursor = conn.execute("DELETE FROM subscriptions WHERE user_id = ?", (user_id,))
+        return cursor.rowcount > 0
+
+    def chat_ids(self) -> list[int]:
+        with self._db.transaction() as conn:
+            rows = conn.execute("SELECT chat_id FROM subscriptions ORDER BY created_at").fetchall()
+        return [row["chat_id"] for row in rows]
+
+
 class SqliteWatchlist:
     def __init__(self, db: Database) -> None:
         self._db = db

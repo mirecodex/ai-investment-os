@@ -78,6 +78,13 @@ MIGRATIONS: tuple[str, ...] = (
         UNIQUE (rec_id, horizon)
     );
     """,
+    """
+    CREATE TABLE subscriptions (
+        user_id    TEXT PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+        chat_id    INTEGER NOT NULL,
+        created_at TEXT NOT NULL
+    );
+    """,
 )
 
 

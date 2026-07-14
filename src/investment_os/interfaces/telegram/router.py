@@ -14,6 +14,7 @@ from investment_os.core.service import AnalysisService, TickerNotFoundError
 from investment_os.interfaces.telegram import presenter
 from investment_os.observability import get_logger
 from investment_os.users import WatchlistRepository
+from investment_os.users.subscriptions import SubscriptionRepository
 
 log = get_logger(__name__)
 
@@ -27,9 +28,15 @@ class Reply:
 
 
 class CommandRouter:
-    def __init__(self, analysis: AnalysisService, watchlist: WatchlistRepository) -> None:
+    def __init__(
+        self,
+        analysis: AnalysisService,
+        watchlist: WatchlistRepository,
+        subscriptions: SubscriptionRepository | None = None,
+    ) -> None:
         self._analysis = analysis
         self._watchlist = watchlist
+        self._subscriptions = subscriptions
 
     async def handle(self, user_id: str, text: str) -> Reply:
         command, _, argument = text.strip().partition(" ")
@@ -51,6 +58,10 @@ class CommandRouter:
                 return self._mutate_watchlist(user_id, argument, add=True)
             case "/remove":
                 return self._mutate_watchlist(user_id, argument, add=False)
+            case "/subscribe":
+                return self._subscribe(user_id)
+            case "/unsubscribe":
+                return self._unsubscribe(user_id)
             case _:
                 return Reply("Perintah tidak dikenal. Coba /help.")
 
@@ -69,6 +80,24 @@ class CommandRouter:
         if not items:
             return Reply("Watchlist kosong. Tambahkan dengan /add <TICKER>.")
         return Reply("Watchlist Anda:\n" + "\n".join(f"• {t}" for t in items))
+
+    def _subscribe(self, user_id: str) -> Reply:
+        if self._subscriptions is None:
+            return Reply("Langganan brief belum aktif di deployment ini.")
+        try:
+            chat_id = int(user_id)
+        except ValueError:
+            return Reply("Langganan hanya tersedia lewat chat Telegram.")
+        if self._subscriptions.subscribe(user_id, chat_id):
+            return Reply("Anda berlangganan Market Brief harian (pra-market WIB).")
+        return Reply("Anda sudah berlangganan Market Brief harian.")
+
+    def _unsubscribe(self, user_id: str) -> Reply:
+        if self._subscriptions is None:
+            return Reply("Langganan brief belum aktif di deployment ini.")
+        if self._subscriptions.unsubscribe(user_id):
+            return Reply("Langganan Market Brief dihentikan.")
+        return Reply("Anda belum berlangganan Market Brief.")
 
     def _mutate_watchlist(self, user_id: str, argument: str, *, add: bool) -> Reply:
         symbol = argument.upper()

@@ -18,8 +18,6 @@ from investment_os.app.container import build_container
 from investment_os.config import load_settings
 from investment_os.core.service import TickerNotFoundError
 from investment_os.interfaces.telegram import presenter
-from investment_os.interfaces.telegram.app import run_polling
-from investment_os.interfaces.telegram.botapi import TelegramClient
 from investment_os.observability import configure_logging, metrics
 
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -55,6 +53,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.live:
         settings = settings.model_copy(update={"data_mode": "live"})
     configure_logging(json_output=settings.log_json)
+
+    if args.command == "serve-telegram":
+        if not settings.telegram_bot_token:
+            print("error: INVOS_TELEGRAM_BOT_TOKEN belum diset", file=sys.stderr)
+            return 2
+        from investment_os.app.runtime import run_bot
+
+        asyncio.run(run_bot(settings))
+        return 0
 
     kb = None
     if settings.data_mode == "live":
@@ -97,14 +104,6 @@ def main(argv: list[str] | None = None) -> int:
                 f"{record.verdict.value} ({record.confidence * 100:.0f}% "
                 f"{record.confidence_band}){rules} [{record.engine_version}]"
             )
-    elif args.command == "serve-telegram":
-        token = settings.telegram_bot_token
-        if not token:
-            print("error: INVOS_TELEGRAM_BOT_TOKEN belum diset", file=sys.stderr)
-            return 2
-        client = TelegramClient(token, poll_timeout_s=settings.telegram_poll_timeout_s)
-        asyncio.run(run_polling(client, container.router))
-
     if args.show_metrics:
         for name, value in sorted(metrics.snapshot().items()):
             print(f"{name} = {value:.2f}", file=sys.stderr)

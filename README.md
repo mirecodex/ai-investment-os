@@ -26,6 +26,7 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Telegram bot (long polling) | ✅ |
 | Persistensi (SQLite): rekomendasi, evidence, rule trigger, outcome, watchlist | ✅ |
 | Data live: harga EOD (Yahoo interim) + crawler RSS media Indonesia | ✅ `--live` |
+| Scheduler WIB: brief harian otomatis (`/subscribe`) + refresh KB live | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis berbasis LLM, Postgres/vector store | ⬜ port sudah tersedia |
 
@@ -62,8 +63,15 @@ Menjalankan bot Telegram (butuh token dari @BotFather):
 
 ```bash
 cp .env.example .env                # isi INVOS_TELEGRAM_BOT_TOKEN
-uv run investment-os serve-telegram
+uv run investment-os serve-telegram          # fixture
+uv run investment-os --live serve-telegram   # data nyata + refresh berkala
 ```
+
+Proses bot menjalankan polling + scheduler dalam satu event loop:
+Market Brief dikirim otomatis ke pelanggan `/subscribe` setiap hari bursa
+pukul `INVOS_BRIEF_TIME_WIB` (default 07:30 WIB); pada mode live, knowledge
+base di-rebuild tiap `INVOS_REFRESH_INTERVAL_MINUTES` (default 60) dan
+di-hot-swap tanpa restart.
 
 ## Arsitektur
 

@@ -18,10 +18,16 @@ from investment_os.core.agents import (
 )
 from investment_os.core.ports import RecommendationStore
 from investment_os.core.service import AnalysisService
-from investment_os.data import Database, SqliteRecommendationStore, SqliteWatchlist
+from investment_os.data import (
+    Database,
+    SqliteRecommendationStore,
+    SqliteSubscriptions,
+    SqliteWatchlist,
+)
 from investment_os.interfaces.telegram.router import CommandRouter
 from investment_os.knowledge.fixtures import load_fixture_kb
 from investment_os.knowledge.ports import KnowledgeBase
+from investment_os.users.subscriptions import SubscriptionRepository
 from investment_os.users.watchlist import WatchlistRepository
 
 
@@ -32,6 +38,7 @@ class Container:
     db: Database
     analysis: AnalysisService
     watchlist: WatchlistRepository
+    subscriptions: SubscriptionRepository
     recommendations: RecommendationStore
     router: CommandRouter
 
@@ -44,6 +51,7 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
     db = Database(settings.database_path)
     recommendations = SqliteRecommendationStore(db)
     watchlist = SqliteWatchlist(db)
+    subscriptions = SqliteSubscriptions(db)
 
     analysis = AnalysisService(
         kb,
@@ -59,13 +67,14 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
         recommendation_store=recommendations,
     )
 
-    router = CommandRouter(analysis, watchlist)
+    router = CommandRouter(analysis, watchlist, subscriptions)
     return Container(
         settings=settings,
         kb=kb,
         db=db,
         analysis=analysis,
         watchlist=watchlist,
+        subscriptions=subscriptions,
         recommendations=recommendations,
         router=router,
     )

@@ -104,6 +104,7 @@ def render_help() -> str:
             "/analyze &lt;TICKER&gt; — analisis emiten (mis. /analyze BBCA)",
             "/watchlist — lihat watchlist",
             "/add &lt;TICKER&gt; · /remove &lt;TICKER&gt; — kelola watchlist",
+            "/subscribe · /unsubscribe — Market Brief harian otomatis",
             "/help — bantuan",
         ]
     )
