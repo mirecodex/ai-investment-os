@@ -46,6 +46,10 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("serve-telegram", help="start the Telegram bot (long polling)")
     sub.add_parser("health", help="wiring/database healthcheck (used by Docker)")
 
+    serve_api = sub.add_parser("serve-api", help="start the internal REST API")
+    serve_api.add_argument("--host", default="127.0.0.1")
+    serve_api.add_argument("--port", type=int, default=8000)
+
     history = sub.add_parser("history", help="show stored recommendations")
     history.add_argument("--ticker", default=None)
     history.add_argument("--limit", type=int, default=10)
@@ -84,6 +88,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"unhealthy: {exc}", file=sys.stderr)
             return 1
         print("ok")
+        return 0
+
+    if args.command == "serve-api":
+        import uvicorn
+
+        from investment_os.interfaces.api import create_app
+
+        api_container = build_container(settings)
+        uvicorn.run(create_app(api_container), host=args.host, port=args.port)
         return 0
 
     if args.command == "eval":

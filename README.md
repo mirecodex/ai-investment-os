@@ -32,6 +32,7 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Evaluation framework: golden set (regression gate CI) + kalibrasi/ECE | ✅ |
 | Alert watchlist: sweep post-market, notifikasi hanya perubahan material | ✅ |
 | Deployment: Docker + compose + healthcheck (build di CI) | ✅ |
+| Interface kedua: REST API internal (FastAPI) di atas core yang sama | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
 
@@ -107,6 +108,7 @@ di-hot-swap tanpa restart.
 
 ```
 interfaces/telegram   adapter tipis: router → presenter → Bot API
+interfaces/api        adapter tipis: REST internal (FastAPI)
         │
 core/                 service (graph wiring) · agents · decision · confidence
                       explain · market_intel      ← tidak mengimpor interfaces
@@ -130,6 +132,20 @@ Prinsip yang dijaga oleh struktur ini:
 - **Modular.** Menambah interface (web/API) atau mengganti analis heuristik
   dengan analis LLM adalah perubahan wiring di `app/container.py`, bukan
   perubahan core.
+
+### REST API internal (interface kedua)
+
+```bash
+uv run investment-os serve-api --host 127.0.0.1 --port 8000
+# GET  /health · /tickers · /brief · /recommendations · /calibration
+# POST /analyze/{ticker}
+# Dokumentasi interaktif: http://127.0.0.1:8000/docs
+```
+
+Adapter tipis di atas core yang sama dengan bot Telegram (prinsip
+hexagonal terbukti: menambah interface tanpa menyentuh core). Ditujukan
+untuk dashboard/integrasi internal — jalankan di belakang boundary
+jaringan/auth Anda sendiri.
 
 ## Deployment (Docker)
 
