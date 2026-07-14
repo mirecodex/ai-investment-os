@@ -29,6 +29,8 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Scheduler WIB: brief harian otomatis (`/subscribe`) + refresh KB live | ✅ |
 | Layer LLM multi-provider: narasi CIO + numeric guard + prompt registry | ✅ |
 | Evaluation framework: golden set (regression gate CI) + kalibrasi/ECE | ✅ |
+| Alert watchlist: sweep post-market, notifikasi hanya perubahan material | ✅ |
+| Deployment: Docker + compose + healthcheck (build di CI) | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
 
@@ -93,7 +95,10 @@ uv run investment-os --live serve-telegram   # data nyata + refresh berkala
 
 Proses bot menjalankan polling + scheduler dalam satu event loop:
 Market Brief dikirim otomatis ke pelanggan `/subscribe` setiap hari bursa
-pukul `INVOS_BRIEF_TIME_WIB` (default 07:30 WIB); pada mode live, knowledge
+pukul `INVOS_BRIEF_TIME_WIB` (default 07:30 WIB); sweep alert watchlist
+berjalan post-market pukul `INVOS_ALERT_TIME_WIB` (default 17:15 WIB) dan
+hanya mengirim notifikasi saat ada perubahan material (keputusan berubah
+atau rule baru aktif — bukan drift confidence); pada mode live, knowledge
 base di-rebuild tiap `INVOS_REFRESH_INTERVAL_MINUTES` (default 60) dan
 di-hot-swap tanpa restart.
 

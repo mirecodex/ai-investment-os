@@ -14,6 +14,8 @@ import datetime as dt
 
 from investment_os.app.container import Container, build_container
 from investment_os.config import Settings
+from investment_os.core.alerts import AlertService
+from investment_os.interfaces.telegram import presenter
 from investment_os.interfaces.telegram.app import run_polling
 from investment_os.interfaces.telegram.botapi import TelegramClient
 from investment_os.interfaces.telegram.broadcast import broadcast_brief
@@ -40,7 +42,7 @@ async def run_bot(settings: Settings) -> None:
     container = build_container(settings, kb=refreshable)
     client = TelegramClient(token, poll_timeout_s=settings.telegram_poll_timeout_s)
 
-    jobs = [_brief_job(settings, client, container)]
+    jobs = [_brief_job(settings, client, container), _alert_job(settings, client, container)]
     if refreshable is not None:
         jobs.append(_refresh_job(settings, refreshable))
     scheduler = Scheduler(jobs)
@@ -56,6 +58,25 @@ def _brief_job(settings: Settings, client: TelegramClient, container: Container)
     return Job(
         name="daily-brief",
         schedule=DailyAt.parse(settings.brief_time_wib),
+        action=action,
+    )
+
+
+def _alert_job(settings: Settings, client: TelegramClient, container: Container) -> Job:
+    service = AlertService(
+        container.analysis,
+        container.watchlist,
+        container.alert_state,
+        client,
+        presenter.render_alert,
+    )
+
+    async def action() -> None:
+        await service.run()
+
+    return Job(
+        name="watchlist-alerts",
+        schedule=DailyAt.parse(settings.alert_time_wib),
         action=action,
     )
 

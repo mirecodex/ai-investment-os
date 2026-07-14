@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     # Daily Market Brief broadcast (WIB wall clock, trading days only)
     brief_time_wib: str = "07:30"
+    # Watchlist alert sweep, post-market WIB
+    alert_time_wib: str = "17:15"
     # Live-mode KB rebuild cadence for the long-running bot
     refresh_interval_minutes: int = 60
 

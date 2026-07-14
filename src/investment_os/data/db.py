@@ -90,6 +90,15 @@ MIGRATIONS: tuple[str, ...] = (
     ALTER TABLE recommendations ADD COLUMN llm_version TEXT;
     ALTER TABLE recommendations ADD COLUMN prompt_version TEXT;
     """,
+    """
+    CREATE TABLE alert_state (
+        ticker          TEXT PRIMARY KEY,
+        verdict         TEXT NOT NULL,
+        rule_ids        TEXT NOT NULL,
+        confidence_band TEXT NOT NULL,
+        updated_at      TEXT NOT NULL
+    );
+    """,
 )
 
 

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import builtins
 import datetime as dt
 import json
 
+from investment_os.core.alerts import AlertState
 from investment_os.core.explain import AnalysisReport
 from investment_os.core.ports import RecommendationRecord
 from investment_os.data.db import Database
@@ -235,3 +237,49 @@ class SqliteWatchlist:
                 (user_id, ticker.strip().upper()),
             )
         return cursor.rowcount > 0
+
+    def all_watchers(self) -> builtins.list[tuple[str, str]]:
+        with self._db.transaction() as conn:
+            rows = conn.execute("SELECT user_id, ticker FROM watchlist ORDER BY ticker").fetchall()
+        return [(row["user_id"], row["ticker"]) for row in rows]
+
+
+class SqliteAlertState:
+    def __init__(self, db: Database) -> None:
+        self._db = db
+
+    def get(self, ticker: str) -> AlertState | None:
+        with self._db.transaction() as conn:
+            row = conn.execute(
+                "SELECT * FROM alert_state WHERE ticker = ?", (ticker.upper(),)
+            ).fetchone()
+        if row is None:
+            return None
+        return AlertState(
+            ticker=row["ticker"],
+            verdict=Verdict(row["verdict"]),
+            rule_ids=row["rule_ids"].split(",") if row["rule_ids"] else [],
+            confidence_band=row["confidence_band"],
+            updated_at=dt.datetime.fromisoformat(row["updated_at"]),
+        )
+
+    def save(self, state: AlertState) -> None:
+        with self._db.transaction() as conn:
+            conn.execute(
+                """
+                INSERT INTO alert_state (ticker, verdict, rule_ids, confidence_band, updated_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT (ticker) DO UPDATE SET
+                    verdict = excluded.verdict,
+                    rule_ids = excluded.rule_ids,
+                    confidence_band = excluded.confidence_band,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    state.ticker.upper(),
+                    state.verdict.value,
+                    ",".join(state.rule_ids),
+                    state.confidence_band,
+                    state.updated_at.isoformat(),
+                ),
+            )

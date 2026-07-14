@@ -11,12 +11,14 @@ from dataclasses import dataclass
 
 from investment_os.config import Settings
 from investment_os.core.agents import default_analysts
+from investment_os.core.alerts import AlertStateStore
 from investment_os.core.explain.narrator import Narrator
 from investment_os.core.llm import LLMError
 from investment_os.core.ports import RecommendationStore
 from investment_os.core.service import AnalysisService
 from investment_os.data import (
     Database,
+    SqliteAlertState,
     SqliteRecommendationStore,
     SqliteSubscriptions,
     SqliteWatchlist,
@@ -40,6 +42,7 @@ class Container:
     watchlist: WatchlistRepository
     subscriptions: SubscriptionRepository
     recommendations: RecommendationStore
+    alert_state: AlertStateStore
     router: CommandRouter
 
 
@@ -52,6 +55,7 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
     recommendations = SqliteRecommendationStore(db)
     watchlist = SqliteWatchlist(db)
     subscriptions = SqliteSubscriptions(db)
+    alert_state = SqliteAlertState(db)
 
     narrator = _build_narrator(settings)
 
@@ -74,6 +78,7 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
         watchlist=watchlist,
         subscriptions=subscriptions,
         recommendations=recommendations,
+        alert_state=alert_state,
         router=router,
     )
 

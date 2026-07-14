@@ -100,6 +100,20 @@ def render_brief(brief: MarketBrief) -> str:
     return "\n".join(lines)
 
 
+def render_alert(ticker: str, changes: list[str], summary: str) -> str:
+    lines = [
+        f"🔔 <b>{_esc(ticker)}</b> — perubahan material di watchlist Anda",
+        "",
+        *(f"• {_esc(change)}" for change in changes),
+        "",
+        f"Status kini: {_esc(summary)}",
+        f"Detail: /analyze {_esc(ticker)}",
+        "",
+        DISCLAIMER,
+    ]
+    return "\n".join(lines)
+
+
 def render_help() -> str:
     return "\n".join(
         [
