@@ -1,0 +1,136 @@
+{
+  "as_of": "2026-07-13T02:00:00+00:00",
+  "index_change_pct": 0.6,
+  "macro": {
+    "bi_rate_pct": 5.25,
+    "usd_idr": 15850,
+    "commodities": { "batu bara": 1.8, "nikel": -0.9, "CPO": 0.4, "emas": 0.7 }
+  },
+  "sources": {
+    "Bisnis Indonesia": 0.9,
+    "Kontan": 0.85,
+    "CNBC Indonesia": 0.8,
+    "IDX Disclosure": 0.98,
+    "Forum Saham": 0.2
+  },
+  "tickers": [
+    {
+      "profile": { "ticker": "BBCA", "name": "Bank Central Asia", "sector": "Perbankan" },
+      "price_series": {
+        "seed": 11,
+        "days": 120,
+        "start_price": 9200,
+        "drift_bps": 14,
+        "vol_bps": 95,
+        "flow": { "mean_bn": 15, "std_bn": 45, "recent_shift_bn": 90, "recent_days": 5 }
+      },
+      "fundamentals": {
+        "period": "Q1-2026",
+        "roe_pct": 21.4,
+        "net_margin_pct": 44.2,
+        "debt_to_equity": 0.9,
+        "pe_ratio": 22.5,
+        "sector_pe_ratio": 24.0,
+        "revenue_yoy_pct": 9.8,
+        "age_days": 75
+      },
+      "news": [
+        {
+          "source": "Bisnis Indonesia",
+          "title": "Laba BBCA kuartal I tumbuh dua digit, kualitas kredit terjaga",
+          "body": "Bank Central Asia membukukan pertumbuhan laba bersih dua digit ditopang ekspansi kredit korporasi dan biaya dana yang rendah.",
+          "days_ago": 1.2,
+          "sentiment": 0.6
+        },
+        {
+          "source": "Kontan",
+          "title": "Kredit korporasi BBCA melaju, NIM stabil",
+          "body": "Penyaluran kredit korporasi BBCA tumbuh di atas industri sementara margin bunga bersih bertahan.",
+          "days_ago": 2.5,
+          "sentiment": 0.4
+        },
+        {
+          "source": "CNBC Indonesia",
+          "title": "Asing kembali masuk saham bank big cap",
+          "body": "Investor asing mencatatkan net buy pada saham perbankan berkapitalisasi besar sepanjang pekan ini.",
+          "days_ago": 0.8,
+          "sentiment": 0.5
+        }
+      ]
+    },
+    {
+      "profile": { "ticker": "ANTM", "name": "Aneka Tambang", "sector": "Pertambangan" },
+      "price_series": {
+        "seed": 23,
+        "days": 120,
+        "start_price": 1650,
+        "drift_bps": 4,
+        "vol_bps": 160,
+        "flow": { "mean_bn": 2, "std_bn": 18, "recent_shift_bn": -75, "recent_days": 5 }
+      },
+      "fundamentals": {
+        "period": "Q1-2026",
+        "roe_pct": 18.9,
+        "net_margin_pct": 12.4,
+        "debt_to_equity": 0.6,
+        "pe_ratio": 9.5,
+        "sector_pe_ratio": 12.5,
+        "revenue_yoy_pct": 14.2,
+        "age_days": 70
+      },
+      "news": [
+        {
+          "source": "CNBC Indonesia",
+          "title": "Harga nikel tertekan, pasar khawatir margin smelter menyusut",
+          "body": "Koreksi harga nikel global memicu kekhawatiran penurunan margin produsen dalam negeri pada semester kedua.",
+          "days_ago": 0.9,
+          "sentiment": -0.6
+        },
+        {
+          "source": "Kontan",
+          "title": "Asing lepas saham tambang, ANTM masuk daftar net sell terbesar",
+          "body": "Investor asing melanjutkan aksi jual pada emiten tambang logam dengan ANTM di antara net sell terbesar pekan ini.",
+          "days_ago": 1.6,
+          "sentiment": -0.5
+        },
+        {
+          "source": "Bisnis Indonesia",
+          "title": "ANTM pertahankan target produksi feronikel meski harga melemah",
+          "body": "Manajemen menyatakan target produksi feronikel tahun ini tidak berubah dan efisiensi biaya terus berjalan.",
+          "days_ago": 2.8,
+          "sentiment": -0.1
+        }
+      ]
+    },
+    {
+      "profile": { "ticker": "TLKM", "name": "Telkom Indonesia", "sector": "Telekomunikasi" },
+      "price_series": {
+        "seed": 37,
+        "days": 120,
+        "start_price": 3100,
+        "drift_bps": 1,
+        "vol_bps": 80,
+        "flow": { "mean_bn": 0, "std_bn": 25, "recent_shift_bn": -5, "recent_days": 5 }
+      },
+      "fundamentals": {
+        "period": "Q1-2026",
+        "roe_pct": 16.1,
+        "net_margin_pct": 16.8,
+        "debt_to_equity": 0.8,
+        "pe_ratio": 12.0,
+        "sector_pe_ratio": 12.4,
+        "revenue_yoy_pct": 3.1,
+        "age_days": 80
+      },
+      "news": [
+        {
+          "source": "Kontan",
+          "title": "Persaingan tarif data menekan ARPU operator telekomunikasi",
+          "body": "Tekanan tarif data berlanjut di kuartal ini meski trafik tumbuh, membuat ARPU industri cenderung datar.",
+          "days_ago": 3.5,
+          "sentiment": -0.2
+        }
+      ]
+    }
+  ]
+}
