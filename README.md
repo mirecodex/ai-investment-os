@@ -33,6 +33,7 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Alert watchlist: sweep post-market, notifikasi hanya perubahan material | ✅ |
 | Deployment: Docker + compose + healthcheck (build di CI) | ✅ |
 | Interface kedua: REST API internal (FastAPI) di atas core yang sama | ✅ |
+| Backtesting point-in-time: replay komite tanpa look-ahead + kalibrasi | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
 
@@ -52,6 +53,7 @@ uv run investment-os brief
 uv run investment-os history        # riwayat rekomendasi tersimpan (SQLite di var/)
 uv run investment-os eval           # golden regression suite (juga jalan di CI)
 uv run investment-os calibration    # hit rate arah + ECE dari outcome tersimpan
+uv run investment-os backtest       # replay point-in-time + kalibrasi (fase 5)
 ```
 
 Mode live (harga EOD via Yahoo Finance + berita RSS, universe di

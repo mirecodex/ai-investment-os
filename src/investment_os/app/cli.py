@@ -52,6 +52,11 @@ def main(argv: list[str] | None = None) -> int:
     calibration = sub.add_parser("calibration", help="direction accuracy & calibration report")
     calibration.add_argument("--horizon", default="20d")
 
+    backtest = sub.add_parser("backtest", help="point-in-time replay over the knowledge base")
+    backtest.add_argument("--horizon-days", type=int, default=20)
+    backtest.add_argument("--stride", type=int, default=5)
+    backtest.add_argument("--min-history", type=int, default=60)
+
     args = parser.parse_args(argv)
     settings = load_settings()
     if args.live:
@@ -89,6 +94,45 @@ def main(argv: list[str] | None = None) -> int:
 
         api_container = build_container(settings)
         uvicorn.run(create_app(api_container), host=args.host, port=args.port)
+        return 0
+
+    if args.command == "backtest":
+        from investment_os.eval import run_backtest
+        from investment_os.knowledge.fixtures import load_fixture_kb
+
+        if settings.data_mode == "live":
+            from investment_os.knowledge.live import load_live_kb
+
+            bt_kb = asyncio.run(
+                load_live_kb(settings.universe_path, history_days=settings.market_history_days)
+            )
+        else:
+            bt_kb = load_fixture_kb(settings.fixtures_path)
+
+        bt = asyncio.run(
+            run_backtest(
+                bt_kb,
+                horizon_days=args.horizon_days,
+                stride_days=args.stride,
+                min_history=args.min_history,
+            )
+        )
+        rel = bt.reliability
+        print(
+            f"Backtest horizon {bt.horizon_days} hari bursa: {bt.sample_count} keputusan "
+            f"di-replay, {rel.directional_count} terarah (BUY/SELL)."
+        )
+        if rel.overall_hit_rate is None:
+            print("Tidak ada keputusan terarah — komite menahan diri sepanjang periode.")
+        else:
+            assert rel.ece is not None
+            print(f"Hit rate arah {rel.overall_hit_rate:.0%} · ECE {rel.ece:.3f}")
+            for bucket in rel.buckets:
+                print(
+                    f"  conf {bucket.low:.1f}-{bucket.high:.1f}: n={bucket.count}, "
+                    f"rata2 conf {bucket.avg_confidence:.2f}, hit {bucket.hit_rate:.0%}"
+                )
+        print("Catatan: backtest untuk kalibrasi, bukan jaminan performa masa depan.")
         return 0
 
     if args.command == "eval":
