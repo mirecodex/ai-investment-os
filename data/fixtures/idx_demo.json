@@ -103,6 +103,17 @@
       ]
     },
     {
+      "profile": { "ticker": "SIDO", "name": "Industri Jamu dan Farmasi Sido Muncul", "sector": "Konsumer" },
+      "price_series": {
+        "seed": 41,
+        "days": 30,
+        "start_price": 550,
+        "drift_bps": 2,
+        "vol_bps": 90,
+        "flow": { "mean_bn": 0, "std_bn": 0, "recent_shift_bn": 0, "recent_days": 5 }
+      }
+    },
+    {
       "profile": { "ticker": "TLKM", "name": "Telkom Indonesia", "sector": "Telekomunikasi" },
       "price_series": {
         "seed": 37,

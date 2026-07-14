@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     environment: str = "dev"
     log_json: bool = False
+    repo_root: Path = _REPO_ROOT
 
     # "fixture" runs fully offline from the demo dataset; "live" pulls EOD
     # prices (Yahoo interim) and RSS news for the configured universe.
@@ -38,6 +39,7 @@ class Settings(BaseSettings):
     llm_model: str | None = None
     llm_max_tokens: int = 700
     prompts_path: Path = _REPO_ROOT / "prompts"
+    golden_path: Path = _REPO_ROOT / "eval" / "golden" / "decisions.json"
 
 
 def load_settings() -> Settings:

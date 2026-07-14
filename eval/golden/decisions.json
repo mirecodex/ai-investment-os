@@ -1,0 +1,54 @@
+{
+  "fixture": "data/fixtures/idx_demo.json",
+  "cases": [
+    {
+      "name": "bbca-sinyal-searah-buy",
+      "ticker": "BBCA",
+      "rationale": "Uptrend + berita positif + akumulasi asing + fundamental solid harus menghasilkan BUY tanpa intervensi rule.",
+      "expect": {
+        "verdict": "BUY",
+        "proposed_verdict": "BUY",
+        "rules_exclude": ["R1", "R1b", "R2", "R3"],
+        "confidence_min": 0.65,
+        "band": "HIGH",
+        "requires_review": false,
+        "min_evidence": 5
+      }
+    },
+    {
+      "name": "antm-konflik-r1-forces-hold",
+      "ticker": "ANTM",
+      "rationale": "Fundamental kuat vs berita negatif + heavy foreign sell: rule R1 wajib memaksa HOLD dan confidence turun ke bawah ambang review.",
+      "expect": {
+        "verdict": "HOLD",
+        "rules_include": ["R1", "R3"],
+        "rules_exclude": ["R2"],
+        "confidence_max": 0.6,
+        "requires_review": true,
+        "min_evidence": 5
+      }
+    },
+    {
+      "name": "tlkm-netral-hold",
+      "ticker": "TLKM",
+      "rationale": "Sinyal datar dan berita tipis: komite menahan diri di HOLD tanpa rule yang terpicu.",
+      "expect": {
+        "verdict": "HOLD",
+        "proposed_verdict": "HOLD",
+        "rules_exclude": ["R1", "R2"],
+        "min_evidence": 3
+      }
+    },
+    {
+      "name": "sido-data-tipis-abstain",
+      "ticker": "SIDO",
+      "rationale": "Riwayat harga pendek tanpa fundamental/berita/flow: semua analis mundur dan evidence gating (R2) wajib menghasilkan ABSTAIN, bukan tebakan.",
+      "expect": {
+        "verdict": "ABSTAIN",
+        "rules_include": ["R2"],
+        "band": "LOW",
+        "requires_review": true
+      }
+    }
+  ]
+}

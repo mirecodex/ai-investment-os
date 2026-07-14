@@ -13,6 +13,7 @@ import asyncio
 import html
 import re
 import sys
+from pathlib import Path
 
 from investment_os.app.container import build_container
 from investment_os.config import load_settings
@@ -48,6 +49,12 @@ def main(argv: list[str] | None = None) -> int:
     history.add_argument("--ticker", default=None)
     history.add_argument("--limit", type=int, default=10)
 
+    evaluate = sub.add_parser("eval", help="run the golden regression suite")
+    evaluate.add_argument("--suite", default=None, help="path to a golden suite JSON")
+
+    calibration = sub.add_parser("calibration", help="direction accuracy & calibration report")
+    calibration.add_argument("--horizon", default="20d")
+
     args = parser.parse_args(argv)
     settings = load_settings()
     if args.live:
@@ -62,6 +69,22 @@ def main(argv: list[str] | None = None) -> int:
 
         asyncio.run(run_bot(settings))
         return 0
+
+    if args.command == "eval":
+        from investment_os.eval import GoldenSuite, run_suite
+
+        suite_path = Path(args.suite) if args.suite else settings.golden_path
+        suite = GoldenSuite.load(suite_path)
+        results = asyncio.run(run_suite(suite, repo_root=settings.repo_root))
+
+        failed = [r for r in results if not r.passed]
+        for case_result in results:
+            status = "PASS" if case_result.passed else "FAIL"
+            print(f"[{status}] {case_result.case.name}: {case_result.summary}")
+            for failure in case_result.failures:
+                print(f"       - {failure}")
+        print(f"\n{len(results) - len(failed)}/{len(results)} kasus lulus")
+        return 1 if failed else 0
 
     kb = None
     if settings.data_mode == "live":
@@ -91,6 +114,26 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "tickers":
         for profile in container.kb.list_tickers():
             print(f"{profile.ticker}  {profile.name} ({profile.sector})")
+    elif args.command == "calibration":
+        from investment_os.eval import reliability_report
+
+        outcomes = container.recommendations.calibration_pairs(horizon=args.horizon)
+        report = reliability_report(outcomes, horizon=args.horizon)
+        if report.directional_count == 0:
+            print(
+                f"Belum ada outcome terarah (BUY/SELL) untuk horizon {args.horizon}. "
+                "Rekam dengan record_outcome seiring waktu berjalan."
+            )
+        else:
+            print(
+                f"Horizon {report.horizon}: {report.directional_count} outcome terarah, "
+                f"hit rate {report.overall_hit_rate:.0%}, ECE {report.ece:.3f}"
+            )
+            for bucket in report.buckets:
+                print(
+                    f"  conf {bucket.low:.1f}-{bucket.high:.1f}: n={bucket.count}, "
+                    f"rata2 conf {bucket.avg_confidence:.2f}, hit {bucket.hit_rate:.0%}"
+                )
     elif args.command == "history":
         records = container.recommendations.history(args.ticker, limit=args.limit)
         if not records:

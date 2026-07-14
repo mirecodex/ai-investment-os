@@ -28,3 +28,6 @@ jobs:
 
       - name: Test
         run: pytest
+
+      - name: Golden regression gate
+        run: investment-os eval

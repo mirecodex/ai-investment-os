@@ -156,11 +156,11 @@ class SqliteRecommendationStore:
                 (rec_id, horizon, actual_return, evaluated_at.isoformat()),
             )
 
-    def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float]]:
+    def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float, Verdict]]:
         with self._db.transaction() as conn:
             rows = conn.execute(
                 """
-                SELECT r.confidence, o.actual_return
+                SELECT r.confidence, o.actual_return, r.verdict
                 FROM outcomes o
                 JOIN recommendations r ON r.id = o.rec_id
                 WHERE o.horizon = ?
@@ -168,7 +168,7 @@ class SqliteRecommendationStore:
                 """,
                 (horizon,),
             ).fetchall()
-        return [(row["confidence"], row["actual_return"]) for row in rows]
+        return [(row["confidence"], row["actual_return"], Verdict(row["verdict"])) for row in rows]
 
 
 class SqliteSubscriptions:

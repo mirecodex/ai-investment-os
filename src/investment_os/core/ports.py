@@ -58,6 +58,6 @@ class RecommendationStore(Protocol):
         """Attach a realized return so confidence can be calibrated later."""
         ...
 
-    def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float]]:
-        """(confidence, actual_return) pairs for reliability analysis."""
+    def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float, Verdict]]:
+        """(confidence, actual_return, verdict) triples for reliability analysis."""
         ...

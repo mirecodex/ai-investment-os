@@ -41,7 +41,7 @@ async def test_outcomes_feed_calibration_pairs(container: Container) -> None:
     )
 
     pairs = container.recommendations.calibration_pairs(horizon="20d")
-    assert (record.confidence, 0.052) in pairs
+    assert (record.confidence, 0.052, record.verdict) in pairs
     assert len([p for p in pairs if p[0] == record.confidence]) == 1
 
 

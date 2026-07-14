@@ -28,6 +28,7 @@ fondasi core berjalan penuh secara offline di atas fixture knowledge base.
 | Data live: harga EOD (Yahoo interim) + crawler RSS media Indonesia | ✅ `--live` |
 | Scheduler WIB: brief harian otomatis (`/subscribe`) + refresh KB live | ✅ |
 | Layer LLM multi-provider: narasi CIO + numeric guard + prompt registry | ✅ |
+| Evaluation framework: golden set (regression gate CI) + kalibrasi/ECE | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
 
@@ -45,6 +46,8 @@ Contoh langsung:
 uv run investment-os analyze ANTM   # kasus konflik sinyal → rule R1 memaksa HOLD
 uv run investment-os brief
 uv run investment-os history        # riwayat rekomendasi tersimpan (SQLite di var/)
+uv run investment-os eval           # golden regression suite (juga jalan di CI)
+uv run investment-os calibration    # hit rate arah + ECE dari outcome tersimpan
 ```
 
 Mode live (harga EOD via Yahoo Finance + berita RSS, universe di
@@ -105,6 +108,7 @@ core/                 service (graph wiring) · agents · decision · confidence
 knowledge/            port KnowledgeBase + implementasi (in-memory/fixture)
 data/                 persistensi SQLite (rekomendasi, outcome, watchlist)
 pipelines/            kurasi data (news: dedup → scoring → KB)
+eval/                 golden suite runner + metrik kalibrasi (fase 5)
 observability/        structlog + metrics registry (run_id per analisis)
 app/                  composition root + CLI
 ```

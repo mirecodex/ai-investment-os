@@ -10,12 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from investment_os.config import Settings
-from investment_os.core.agents import (
-    ForeignFlowAnalyst,
-    FundamentalAnalyst,
-    NewsAnalyst,
-    TechnicalAnalyst,
-)
+from investment_os.core.agents import default_analysts
 from investment_os.core.explain.narrator import Narrator
 from investment_os.core.llm import LLMError
 from investment_os.core.ports import RecommendationStore
@@ -62,12 +57,7 @@ def build_container(settings: Settings, *, kb: KnowledgeBase | None = None) -> C
 
     analysis = AnalysisService(
         kb,
-        analysts=[
-            TechnicalAnalyst(),
-            FundamentalAnalyst(),
-            NewsAnalyst(),
-            ForeignFlowAnalyst(),
-        ],
+        analysts=default_analysts(),
         min_evidence=settings.analysis_min_evidence,
         stale_after_days=settings.analysis_stale_after_days,
         low_confidence_threshold=settings.low_confidence_threshold,
