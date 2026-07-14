@@ -1,10 +1,3 @@
-"""Composition root: the only module allowed to know about everything.
-
-Core stays interface-free and provider-free; this is where concrete
-implementations (fixture KB today, Postgres/vector tomorrow; heuristic
-analysts today, LLM-backed tomorrow) get wired together.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

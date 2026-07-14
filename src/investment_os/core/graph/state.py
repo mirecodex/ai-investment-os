@@ -1,10 +1,3 @@
-"""Shared state for the Investment Committee graph.
-
-Mirrors ``AnalysisState`` in docs/fase-2-ai-architecture/02-langgraph-workflow.md.
-State is immutable per node: each node returns a patch, the runtime applies it
-as a copy, so a failed node can never leave half-written state behind.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

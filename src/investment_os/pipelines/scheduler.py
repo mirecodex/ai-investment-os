@@ -1,11 +1,3 @@
-"""Async job scheduler with WIB-aware daily triggers.
-
-Purpose-built rather than a cron dependency: two schedule shapes (daily at a
-wall-clock time in WIB, fixed interval), error isolation per job, and
-injectable clock/sleep so tests run in virtual time. Event-driven triggers
-(docs/fase-3, doc 06) plug in later as a third schedule shape.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

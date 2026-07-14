@@ -1,10 +1,3 @@
-"""Transport-agnostic command handling.
-
-The router maps parsed commands onto core services and returns reply text.
-It knows nothing about the Bot API, so the exact same handling is exercised
-by unit tests and by the polling client in ``app.py``.
-"""
-
 from __future__ import annotations
 
 import re

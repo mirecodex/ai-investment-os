@@ -1,10 +1,3 @@
-"""Persistence ports consumed by core.
-
-Core writes through these protocols and never sees a driver. The schema they
-imply follows docs/fase-3-data-platform/07-database-vector-schema.md; the
-SQLite implementation lives in ``investment_os.data``.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

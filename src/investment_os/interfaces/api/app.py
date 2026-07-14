@@ -1,12 +1,3 @@
-"""Internal REST API — the second interface over the same core.
-
-Thin adapter per the hexagonal rule: routes call container services and
-serialize their pydantic models; no analysis logic lives here. Intended for
-internal dashboards and integrations (docs/fase-4, API design; roadmap
-Tahap 3), not yet a hardened public API — deploy it behind your own
-network boundary / auth layer.
-"""
-
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Query

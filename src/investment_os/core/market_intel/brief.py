@@ -1,10 +1,3 @@
-"""Market Intelligence Layer: the daily Market Brief.
-
-Context comes before stock analysis (design philosophy #3): every committee
-run receives the brief produced here, so a bullish stock signal is always
-read against how the market itself is behaving today.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

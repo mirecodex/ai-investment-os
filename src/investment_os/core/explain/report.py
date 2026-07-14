@@ -1,11 +1,3 @@
-"""Explainability: assemble a fully-attributed report from graph state.
-
-The report is interface-agnostic structured data; rendering (Telegram HTML,
-web, API JSON) happens in the interface adapters. Everything here must be
-reconstructable — verdict, the rules that shaped it, the evidence behind each
-argument, and the per-node audit trail.
-"""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

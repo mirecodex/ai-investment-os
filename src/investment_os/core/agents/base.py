@@ -1,11 +1,3 @@
-"""Analyst contract.
-
-The MVP ships deterministic, evidence-driven analysts computed from curated
-knowledge-base records. An LLM-backed analyst implements the same protocol
-behind the same schema (``AnalystOpinion``), so upgrading a role is a wiring
-change in the container, never a change to the committee.
-"""
-
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable

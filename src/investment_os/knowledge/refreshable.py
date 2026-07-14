@@ -1,12 +1,3 @@
-"""Hot-swappable knowledge base for long-running processes.
-
-The bot process holds one ``RefreshableKnowledgeBase``; a scheduler job
-rebuilds the inner KB from live feeds and swaps it atomically. Readers always
-see a complete snapshot — never a half-loaded one. A failed refresh keeps the
-previous KB serving (stale beats broken; staleness is what R2 gating and the
-freshness factor are for).
-"""
-
 from __future__ import annotations
 
 from investment_os.domain import MacroSnapshot

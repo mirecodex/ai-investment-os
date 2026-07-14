@@ -1,5 +1,3 @@
-"""End-to-end committee runs against the fixture knowledge base."""
-
 from __future__ import annotations
 
 import pytest

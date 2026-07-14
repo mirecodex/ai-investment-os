@@ -1,11 +1,3 @@
-"""Direction accuracy and confidence calibration from recorded outcomes.
-
-Implements the metrics in docs/fase-5 (backtesting + evaluation): per-bucket
-hit rate against confidence, and an expected calibration error (ECE). Reads
-the (confidence, actual_return, verdict) triples accumulated by the
-recommendation store — the longer the system runs, the sharper this gets.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

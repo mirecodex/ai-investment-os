@@ -1,11 +1,3 @@
-"""Adapter for OpenAI-compatible chat-completions APIs.
-
-One implementation covers every provider that speaks this wire format:
-OpenAI, xAI, DeepSeek, Qwen (DashScope), GLM (Z.AI/BigModel), MiniMax,
-OpenRouter, and Google's Gemini compatibility endpoint. Base URL and model
-come from the provider registry.
-"""
-
 from __future__ import annotations
 
 from typing import Any

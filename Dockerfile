@@ -1,4 +1,3 @@
-# Build stage: resolve and install dependencies with uv against the lockfile.
 FROM ghcr.io/astral-sh/uv:python3.11-bookworm-slim AS builder
 
 WORKDIR /app

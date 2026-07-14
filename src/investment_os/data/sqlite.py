@@ -1,5 +1,3 @@
-"""SQLite implementations of the persistence ports."""
-
 from __future__ import annotations
 
 import builtins

@@ -1,11 +1,3 @@
-"""Rendering for Telegram (HTML parse mode, Bahasa Indonesia).
-
-Output order follows the explainability template (docs/fase-2, doc 09 and
-fase-4, doc 03): keputusan + confidence → alasan → rule → risiko → evidence →
-disclaimer. Wording stays hedged by construction — no template here may state
-certainty or promised returns (rule R4 lives in this layer).
-"""
-
 from __future__ import annotations
 
 import html

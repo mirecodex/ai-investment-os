@@ -1,21 +1,3 @@
-"""Confidence engine.
-
-Implements the factor model from docs/fase-2-ai-architecture/08-confidence-engine.md:
-
-    confidence = calibrate(
-        w1*evidence_strength + w2*freshness + w3*analyst_agreement
-        - w4*rule_conflict + w5*source_quality
-    )
-
-Factor construction:
-- evidence_strength saturates (1 - exp(-Σreliability/k)): the tenth citation
-  is worth less than the second, and unreliable sources barely count.
-- freshness is a reliability-weighted exponential decay by evidence age.
-- agreement penalizes dispersion of confidence-weighted analyst scores.
-- calibration is a monotone piecewise-linear map, identity until backtesting
-  data exists to fit it (docs/fase-5).
-"""
-
 from __future__ import annotations
 
 import datetime as dt

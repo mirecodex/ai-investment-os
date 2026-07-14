@@ -1,10 +1,3 @@
-"""Structured logging with per-run correlation.
-
-Every analysis run gets a ``run_id`` bound into contextvars so that log lines
-emitted anywhere in the graph (analysts, rule engine, delivery) can be joined
-back into one trace. See docs/fase-4-engineering/06-observability.md.
-"""
-
 from __future__ import annotations
 
 import logging

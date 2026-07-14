@@ -1,18 +1,3 @@
-"""Golden suite runner.
-
-Each case runs the full committee (deterministic, no LLM) and is checked on
-two levels:
-
-1. Case expectations — verdict, rule triggers, confidence bounds.
-2. Invariant checks applied to every case regardless of expectations,
-   from the evaluation dimensions in docs/fase-5:
-   - groundedness: every argument point carries evidence, and evidence
-     backs the run at all unless it abstained;
-   - explainability: audit trail present, headline non-empty;
-   - safety: the rendered user-facing report contains the disclaimer and
-     no guarantee language (rule R4).
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

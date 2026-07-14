@@ -1,11 +1,3 @@
-"""RSS ingestion for Indonesian financial media.
-
-Fetch → parse (RSS 2.0 / Atom) → tag tickers via the universe's alias map →
-score interim sentiment → hand ``RawNewsItem`` batches to ``NewsPipeline``,
-which owns dedup and importance. Feed outages degrade to a warning; one dead
-feed never blocks the batch.
-"""
-
 from __future__ import annotations
 
 import asyncio

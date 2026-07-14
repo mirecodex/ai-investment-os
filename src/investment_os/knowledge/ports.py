@@ -1,10 +1,3 @@
-"""Knowledge base port.
-
-Agents never read raw sources; they read curated records through this port
-(docs/fase-2, principle 1). The protocol is the seam where Postgres/vector
-implementations replace the in-memory store without touching core.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

@@ -1,11 +1,3 @@
-"""Numeric guard: LLM text may not introduce financial figures.
-
-Coding standard (docs/fase-6): "tidak ada angka finansial di-hardcode dari
-LLM". Every number in generated narrative must already exist somewhere in the
-evidence, key points, or decision data it was given. Numbers are compared as
-normalized digit strings so ``9.200``, ``9,200`` and ``9200`` all match.
-"""
-
 from __future__ import annotations
 
 import re

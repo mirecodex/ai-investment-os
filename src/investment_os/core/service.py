@@ -1,16 +1,3 @@
-"""Investment Committee orchestration.
-
-Wires the graph from docs/fase-2-ai-architecture/02-langgraph-workflow.md:
-
-    load_context -> route_analysts -> run_analysts
-        -> [insufficient evidence] -> abstain -> END
-        -> build_cases -> committee_review -> decide -> END
-
-Confidence and rules interlock in two passes inside ``decide``: verdict-shaping
-rules run first, the number of conflicts they raise feeds the confidence
-score, and the confidence floor (R3) is checked against that final number.
-"""
-
 from __future__ import annotations
 
 import asyncio

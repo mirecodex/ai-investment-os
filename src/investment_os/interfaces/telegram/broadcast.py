@@ -1,5 +1,3 @@
-"""Push delivery: daily Market Brief to subscribed chats."""
-
 from __future__ import annotations
 
 from typing import Protocol

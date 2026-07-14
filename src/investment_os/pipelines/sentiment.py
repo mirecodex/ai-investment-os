@@ -1,13 +1,3 @@
-"""Interim lexicon-based sentiment for Indonesian financial headlines.
-
-A stopgap so the news pipeline produces a usable signal before the LLM-backed
-news-intelligence stage lands (docs/fase-3, doc 03). Deliberately shallow:
-word-level polarity with a negation flip and square-root damping, tuned for
-recall on headline vocabulary rather than nuance. The news analyst already
-treats sentiment as one weighted input among many, so a coarse score is
-acceptable here and calibration happens downstream.
-"""
-
 from __future__ import annotations
 
 import re

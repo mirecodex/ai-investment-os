@@ -1,11 +1,3 @@
-"""In-process metrics registry.
-
-Deliberately backend-free: counters and timings accumulate in memory and are
-exported by whatever backend gets wired in later (Prometheus, OTLP). Keeping
-the call sites stable now is what matters — instrumentation is not retrofitted
-well.
-"""
-
 from __future__ import annotations
 
 import threading

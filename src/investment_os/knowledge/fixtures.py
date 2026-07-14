@@ -1,12 +1,3 @@
-"""Deterministic demo dataset.
-
-The fixture file stores scenario *parameters* (drift, volatility, flow shift,
-news items); price/flow series are synthesized here with a seeded RNG so the
-demo stays reproducible without shipping megabytes of bars. Real market-data
-pipelines replace this module entirely — everything downstream only sees the
-``KnowledgeBase`` port.
-"""
-
 from __future__ import annotations
 
 import datetime as dt

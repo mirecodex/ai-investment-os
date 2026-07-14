@@ -1,11 +1,3 @@
-"""Minimal typed graph runtime for the committee workflow.
-
-LangGraph-shaped on purpose (nodes mutate shared state via patches, edges may
-be conditional) but dependency-free and fully deterministic, which keeps the
-committee unit-testable without an LLM in the loop. Swapping this for
-LangGraph later is an adapter change, not a rewrite — see docs/adr/0001.
-"""
-
 from __future__ import annotations
 
 import asyncio

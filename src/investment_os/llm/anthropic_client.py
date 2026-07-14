@@ -1,10 +1,3 @@
-"""Adapter for the Anthropic Messages API (official SDK).
-
-Requires the optional dependency: ``pip install "investment-os[anthropic]"``.
-The client object is injectable so tests exercise the full mapping without
-the SDK installed or any network access.
-"""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,17 +1,3 @@
-"""Rule evaluator with override audit.
-
-Semantics:
-- ``FORCE`` pins the verdict outright; the first (lowest-priority-number)
-  matching FORCE wins and later forces are ignored, so ordering in the rule
-  catalog is the single source of precedence.
-- ``CAP_BULLISH`` clamps the verdict's bullishness (BUY→HOLD) but never turns
-  a SELL into something else.
-- ``FLAG_REVIEW`` leaves the verdict alone and marks the run for human review.
-
-Every effect that changes or constrains the proposal is recorded as a
-``RuleTrigger`` so a recommendation can be reconstructed for audit.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

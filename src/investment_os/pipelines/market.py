@@ -1,15 +1,3 @@
-"""Market data pipeline: EOD price feed behind a port.
-
-``YahooPriceFeed`` is the interim free source (IDX tickers trade as
-``BBCA.JK``, the composite index as ``^JKSE``) until a licensed provider is
-chosen (docs/fase-3, doc 01 — an open TODO). It supplies OHLCV only; net
-foreign flow is not available from free sources, so bars carry 0.0 and the
-foreign-flow analyst recuses itself (see ``ForeignFlowAnalyst.is_relevant``).
-
-Parsing is separated from transport so tests exercise the full mapping with
-canned payloads and never touch the network.
-"""
-
 from __future__ import annotations
 
 import asyncio

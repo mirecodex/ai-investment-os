@@ -1,10 +1,3 @@
-"""Thin async Telegram Bot API client (long polling).
-
-Deliberately framework-free: two endpoints (getUpdates, sendMessage) with
-retry/backoff do not justify a bot framework dependency at this stage. If the
-interface grows inline keyboards and callbacks (docs/fase-4, doc 03), revisit.
-"""
-
 from __future__ import annotations
 
 import asyncio

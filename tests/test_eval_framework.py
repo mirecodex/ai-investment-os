@@ -1,5 +1,3 @@
-"""The golden suite IS a test: any drift in committee behavior fails CI."""
-
 from __future__ import annotations
 
 from pathlib import Path

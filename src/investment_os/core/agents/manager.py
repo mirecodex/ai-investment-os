@@ -1,11 +1,3 @@
-"""Research Manager: decides which analysts sit on today's committee.
-
-Per docs/fase-2 agent specifications, the manager owns routing: each analyst
-declares its own data requirements via ``is_relevant``, and the manager
-resolves the roster, keeps the reasons auditable, and enforces a quorum so
-a one-analyst "committee" is treated as insufficient rather than authoritative.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

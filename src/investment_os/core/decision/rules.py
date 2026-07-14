@@ -1,10 +1,3 @@
-"""Declarative business rules (hard constraints on the committee).
-
-Catalog follows docs/fase-2-ai-architecture/07-decision-engine.md. Rules are
-data: auditable, orderable by priority, and changeable without touching the
-evaluator. The LLM (or heuristic committee) proposes; rules dispose.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable
