@@ -42,8 +42,10 @@ Sistem berjalan penuh offline di atas fixture, dan opsional live via
 | Deployment: Docker + compose + healthcheck (build di CI) | ✅ |
 | Interface kedua: REST API internal (FastAPI) di atas core yang sama | ✅ |
 | Backtesting point-in-time: replay komite tanpa look-ahead + kalibrasi | ✅ |
+| Analis berita LLM (opt-in, sitasi wajib, fallback deterministik) | ✅ `INVOS_LLM_ANALYSTS` |
+| Outcome tracking otomatis: sweep return terealisasi → kalibrasi | ✅ |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
-| Analis LLM penuh (per-role), Postgres/vector store | ⬜ port sudah tersedia |
+| Analis LLM role lain (teknikal/fundamental), Postgres/vector store | ⬜ port sudah tersedia |
 
 ## Quickstart
 

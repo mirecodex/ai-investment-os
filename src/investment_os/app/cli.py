@@ -52,6 +52,11 @@ def main(argv: list[str] | None = None) -> int:
     calibration = sub.add_parser("calibration", help="direction accuracy & calibration report")
     calibration.add_argument("--horizon", default="20d")
 
+    record_outcomes = sub.add_parser(
+        "record-outcomes", help="record realized returns for matured recommendations"
+    )
+    record_outcomes.add_argument("--horizon-days", type=int, default=None)
+
     backtest = sub.add_parser("backtest", help="point-in-time replay over the knowledge base")
     backtest.add_argument("--horizon-days", type=int, default=20)
     backtest.add_argument("--stride", type=int, default=5)
@@ -179,6 +184,16 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "tickers":
         for profile in container.kb.list_tickers():
             print(f"{profile.ticker}  {profile.name} ({profile.sector})")
+    elif args.command == "record-outcomes":
+        from investment_os.core.outcomes import OutcomeTracker
+
+        horizon_days = args.horizon_days or settings.outcome_horizon_days
+        tracker = OutcomeTracker(container.kb, container.recommendations, horizon_days=horizon_days)
+        recorded = tracker.run()
+        print(
+            f"{recorded} outcome tercatat untuk horizon {horizon_days} hari bursa. "
+            f"Lihat: investment-os calibration --horizon {horizon_days}d"
+        )
     elif args.command == "calibration":
         from investment_os.eval import reliability_report
 

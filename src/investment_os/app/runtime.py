@@ -8,6 +8,7 @@ import signal
 from investment_os.app.container import Container, build_container
 from investment_os.config import Settings
 from investment_os.core.alerts import AlertService
+from investment_os.core.outcomes import OutcomeTracker
 from investment_os.interfaces.telegram import presenter
 from investment_os.interfaces.telegram.app import run_polling
 from investment_os.interfaces.telegram.botapi import TelegramClient
@@ -35,7 +36,11 @@ async def run_bot(settings: Settings) -> None:
     container = build_container(settings, kb=refreshable)
     client = TelegramClient(token, poll_timeout_s=settings.telegram_poll_timeout_s)
 
-    jobs = [_brief_job(settings, client, container), _alert_job(settings, client, container)]
+    jobs = [
+        _brief_job(settings, client, container),
+        _alert_job(settings, client, container),
+        _outcome_job(settings, container),
+    ]
     if refreshable is not None:
         jobs.append(_refresh_job(settings, refreshable))
     scheduler = Scheduler(jobs)
@@ -106,6 +111,21 @@ def _alert_job(settings: Settings, client: TelegramClient, container: Container)
     return Job(
         name="watchlist-alerts",
         schedule=DailyAt.parse(settings.alert_time_wib),
+        action=action,
+    )
+
+
+def _outcome_job(settings: Settings, container: Container) -> Job:
+    tracker = OutcomeTracker(
+        container.kb, container.recommendations, horizon_days=settings.outcome_horizon_days
+    )
+
+    async def action() -> None:
+        await asyncio.to_thread(tracker.run)
+
+    return Job(
+        name="outcome-sweep",
+        schedule=DailyAt.parse(settings.outcome_time_wib),
         action=action,
     )
 
