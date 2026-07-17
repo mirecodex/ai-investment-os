@@ -51,6 +51,12 @@ class RecommendationStore(Protocol):
         """Attach a realized return so confidence can be calibrated later."""
         ...
 
+    def pending_outcomes(
+        self, *, horizon: str, as_of_before: dt.datetime
+    ) -> list[tuple[int, str, dt.datetime]]:
+        """(rec_id, ticker, as_of) of recommendations still awaiting an outcome."""
+        ...
+
     def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float, Verdict]]:
         """(confidence, actual_return, verdict) triples for reliability analysis."""
         ...

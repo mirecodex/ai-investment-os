@@ -156,6 +156,22 @@ class SqliteRecommendationStore:
                 (rec_id, horizon, actual_return, evaluated_at.isoformat()),
             )
 
+    def pending_outcomes(
+        self, *, horizon: str, as_of_before: dt.datetime
+    ) -> list[tuple[int, str, dt.datetime]]:
+        with self._db.transaction() as conn:
+            rows = conn.execute(
+                """
+                SELECT r.id, r.ticker, r.as_of
+                FROM recommendations r
+                LEFT JOIN outcomes o ON o.rec_id = r.id AND o.horizon = ?
+                WHERE o.rec_id IS NULL AND r.as_of <= ?
+                ORDER BY r.as_of
+                """,
+                (horizon, as_of_before.isoformat()),
+            ).fetchall()
+        return [(row["id"], row["ticker"], dt.datetime.fromisoformat(row["as_of"])) for row in rows]
+
     def calibration_pairs(self, *, horizon: str) -> list[tuple[float, float, Verdict]]:
         with self._db.transaction() as conn:
             rows = conn.execute(

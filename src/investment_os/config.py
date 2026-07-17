@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     brief_time_wib: str = "07:30"
     # Watchlist alert sweep, post-market WIB
     alert_time_wib: str = "17:15"
+    # Realized-return sweep for calibration, post-market WIB
+    outcome_time_wib: str = "17:45"
+    outcome_horizon_days: int = 20
     # Live-mode KB rebuild cadence for the long-running bot
     refresh_interval_minutes: int = 60
 
