@@ -103,6 +103,7 @@ def _alert_job(settings: Settings, client: TelegramClient, container: Container)
         container.alert_state,
         client,
         presenter.render_alert,
+        kb=container.kb,
     )
 
     async def action() -> None:

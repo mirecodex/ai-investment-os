@@ -90,6 +90,9 @@ MIGRATIONS: tuple[str, ...] = (
         updated_at      TEXT NOT NULL
     );
     """,
+    """
+    ALTER TABLE alert_state ADD COLUMN event_ids TEXT NOT NULL DEFAULT '';
+    """,
 )
 
 

@@ -280,19 +280,22 @@ class SqliteAlertState:
             rule_ids=row["rule_ids"].split(",") if row["rule_ids"] else [],
             confidence_band=row["confidence_band"],
             updated_at=dt.datetime.fromisoformat(row["updated_at"]),
+            event_ids=row["event_ids"].split(",") if row["event_ids"] else [],
         )
 
     def save(self, state: AlertState) -> None:
         with self._db.transaction() as conn:
             conn.execute(
                 """
-                INSERT INTO alert_state (ticker, verdict, rule_ids, confidence_band, updated_at)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO alert_state
+                    (ticker, verdict, rule_ids, confidence_band, updated_at, event_ids)
+                VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT (ticker) DO UPDATE SET
                     verdict = excluded.verdict,
                     rule_ids = excluded.rule_ids,
                     confidence_band = excluded.confidence_band,
-                    updated_at = excluded.updated_at
+                    updated_at = excluded.updated_at,
+                    event_ids = excluded.event_ids
                 """,
                 (
                     state.ticker.upper(),
@@ -300,5 +303,6 @@ class SqliteAlertState:
                     ",".join(state.rule_ids),
                     state.confidence_band,
                     state.updated_at.isoformat(),
+                    ",".join(state.event_ids),
                 ),
             )
