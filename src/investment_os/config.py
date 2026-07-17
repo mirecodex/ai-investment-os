@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     llm_provider: str | None = None
     llm_model: str | None = None
     llm_max_tokens: int = 700
+    # Opt-in: let the LLM take over the news seat in the committee (with the
+    # deterministic lexicon analyst as automatic fallback). Off by default so
+    # decisions stay reproducible unless explicitly enabled.
+    llm_analysts: bool = False
     prompts_path: Path = _REPO_ROOT / "prompts"
     golden_path: Path = _REPO_ROOT / "eval" / "golden" / "decisions.json"
 

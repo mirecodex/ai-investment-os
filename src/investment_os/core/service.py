@@ -78,6 +78,10 @@ class AnalysisService:
         self._manager = ResearchManager(analysts)
         self._graph = self._build_graph()
 
+    @property
+    def analysts(self) -> list[Analyst]:
+        return list(self._analysts)
+
     async def analyze(self, ticker: str) -> AnalysisResult:
         symbol = ticker.strip().upper()
         with bind_run_context(ticker=symbol) as run_id:
