@@ -4,6 +4,7 @@ from investment_os.core.agents.fundamental import FundamentalAnalyst
 from investment_os.core.agents.macro import MacroAnalyst
 from investment_os.core.agents.manager import ResearchManager, RoutingDecision
 from investment_os.core.agents.news import NewsAnalyst
+from investment_os.core.agents.news_llm import LlmNewsAnalyst
 from investment_os.core.agents.quant import QuantAnalyst
 from investment_os.core.agents.sector import SectorRotationAnalyst
 from investment_os.core.agents.technical import TechnicalAnalyst
@@ -27,6 +28,7 @@ __all__ = [
     "AnalystError",
     "ForeignFlowAnalyst",
     "FundamentalAnalyst",
+    "LlmNewsAnalyst",
     "MacroAnalyst",
     "NewsAnalyst",
     "QuantAnalyst",
