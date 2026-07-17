@@ -4,12 +4,20 @@ import datetime as dt
 from pathlib import Path
 
 from investment_os.app.container import Container
-from investment_os.core.alerts import AlertService, AlertState, material_changes
+from investment_os.core.alerts import (
+    AlertService,
+    AlertState,
+    MarketEvent,
+    market_events,
+    material_changes,
+)
 from investment_os.data import Database, SqliteAlertState
-from investment_os.domain import Verdict
+from investment_os.domain import MacroSnapshot, Verdict
 from investment_os.interfaces.telegram.presenter import render_alert
+from investment_os.knowledge.ports import MarketSnapshot, PriceBar, TickerProfile
 from investment_os.users import InMemoryWatchlist
 from tests.conftest import NOW
+from tests.test_new_analysts import bars
 
 
 class MemoryAlertState:
@@ -146,4 +154,79 @@ def test_sqlite_alert_state_roundtrip(tmp_path: Path) -> None:
     assert reloaded is not None
     assert reloaded.verdict is Verdict.HOLD
     assert reloaded.rule_ids == []
+    db.close()
+
+
+# -- market event detection -------------------------------------------------------
+
+
+def event_snapshot(series: list[PriceBar]) -> MarketSnapshot:
+    return MarketSnapshot(
+        profile=TickerProfile(ticker="TEST", name="Test Corp", sector="Perbankan"),
+        bars=series,
+        news=[],
+        fundamentals=None,
+        macro=MacroSnapshot(bi_rate_pct=6.0, usd_idr=15850),
+        as_of=NOW,
+        index_bars=[],
+        sector_returns={},
+    )
+
+
+def test_sma_cross_up_detected() -> None:
+    series = bars(59, daily_pct=-0.002)
+    last = series[-1]
+    spike = last.close * 1.15
+    series.append(
+        PriceBar(
+            date=last.date + dt.timedelta(days=1),
+            open=last.close,
+            high=spike * 1.005,
+            low=last.close * 0.995,
+            close=spike,
+            volume=1e6,
+        )
+    )
+    ids = [event.event_id for event in market_events(event_snapshot(series))]
+    assert "sma50_cross_up" in ids
+
+
+def test_steady_decline_flags_oversold_only() -> None:
+    ids = [event.event_id for event in market_events(event_snapshot(bars(30, daily_pct=-0.02)))]
+    assert ids == ["rsi_oversold"]
+
+
+def test_foreign_flow_spike_detected() -> None:
+    series = [
+        bar.model_copy(update={"net_foreign_bn_idr": 10.0 if i % 2 == 0 else -10.0})
+        for i, bar in enumerate(bars(25))
+    ]
+    series[-1] = series[-1].model_copy(update={"net_foreign_bn_idr": 200.0})
+    ids = [event.event_id for event in market_events(event_snapshot(series))]
+    assert "flow_spike_masuk" in ids
+
+
+def test_quiet_market_produces_no_events() -> None:
+    assert market_events(event_snapshot(bars(60))) == []
+
+
+def test_ongoing_event_alerts_once_until_it_clears() -> None:
+    events = [
+        MarketEvent("rsi_oversold", "RSI-14 25 — jenuh jual"),
+        MarketEvent("sma50_cross_down", "harga jatuh ke bawah SMA-50 (95)"),
+    ]
+    previous = state(Verdict.HOLD, []).model_copy(update={"event_ids": ["rsi_oversold"]})
+    current = state(Verdict.HOLD, []).model_copy(
+        update={"event_ids": ["rsi_oversold", "sma50_cross_down"]}
+    )
+    assert material_changes(previous, current, events) == ["harga jatuh ke bawah SMA-50 (95)"]
+
+
+def test_sqlite_roundtrips_event_ids(tmp_path: Path) -> None:
+    db = Database(tmp_path / "alert-events.db")
+    store = SqliteAlertState(db)
+    store.save(state(Verdict.BUY, []).model_copy(update={"event_ids": ["rsi_overbought"]}))
+    loaded = store.get("BBCA")
+    assert loaded is not None
+    assert loaded.event_ids == ["rsi_overbought"]
     db.close()
