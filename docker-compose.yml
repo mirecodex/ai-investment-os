@@ -21,7 +21,9 @@ services:
     environment:
       INVOS_ENVIRONMENT: prod
     ports:
-      - "127.0.0.1:8000:8000" # widen to "8000:8000" only with INVOS_API_AUTH set
+      # Change the host port via INVOS_API_PORT in .env if 8000 is taken.
+      # Widen the bind beyond 127.0.0.1 only with INVOS_API_AUTH set.
+      - "${INVOS_API_BIND:-127.0.0.1}:${INVOS_API_PORT:-8000}:8000"
     volumes:
       - invos-var:/app/var    # same SQLite as the bot: shared history & outcomes
     stop_grace_period: 15s
