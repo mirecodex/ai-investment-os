@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     telegram_bot_token: str | None = None
     telegram_poll_timeout_s: int = 30
 
+    # "user:password" enables HTTP Basic auth on the REST API + dashboard
+    # (all routes except /health). None leaves the API open — bind it to
+    # localhost or a private network in that case.
+    api_auth: str | None = None
+
     # Daily Market Brief broadcast (WIB wall clock, trading days only)
     brief_time_wib: str = "07:30"
     # Watchlist alert sweep, post-market WIB

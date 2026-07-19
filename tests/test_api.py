@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import dataclasses
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -63,3 +65,23 @@ def test_dashboard_serves_self_contained_page(client: TestClient) -> None:
     for marker in ("/brief", "/calibration", "/recommendations", "/tickers", "/analyze/"):
         assert marker in page  # the page drives the existing JSON endpoints
     assert "https://" not in page  # strictly self-contained: no external assets
+
+
+def test_basic_auth_locks_everything_but_health(container: Container) -> None:
+    secured = dataclasses.replace(
+        container,
+        settings=container.settings.model_copy(update={"api_auth": "ops:rahasia"}),
+    )
+    locked = TestClient(create_app(secured))
+
+    assert locked.get("/health").status_code == 200  # probes stay unauthenticated
+    denied = locked.get("/")
+    assert denied.status_code == 401
+    assert denied.headers["www-authenticate"].startswith("Basic")
+    assert locked.get("/tickers", auth=("ops", "salah")).status_code == 401
+    assert locked.get("/tickers", auth=("ops", "rahasia")).status_code == 200
+    assert locked.get("/", auth=("ops", "rahasia")).status_code == 200
+
+
+def test_no_auth_configured_leaves_api_open(client: TestClient) -> None:
+    assert client.get("/tickers").status_code == 200
