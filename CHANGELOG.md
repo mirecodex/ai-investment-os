@@ -4,6 +4,38 @@ Semua perubahan penting pada proyek ini dicatat di sini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/),
 dan versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
+## [0.3.0] — 2026-07-19
+
+Gelombang perluasan: cakupan penuh LQ45, kursi komite LLM kedua, kanal
+alert baru, dan evaluasi strategi — plus perbaikan dari pemakaian nyata.
+
+### Ditambahkan
+
+- **Universe LQ45 penuh** — mode live kini mencakup 45 konstituen
+  (`data/universe/lq45.json`) dengan sektor selaras sensitivitas analis
+  makro dan alias berita untuk tagger. Snapshot dirawat manual; sesuaikan
+  saat rebalancing indeks.
+- **Analis aksi korporasi LLM** — kursi komite tambahan (hanya saat
+  `INVOS_LLM_ANALYSTS=true`) menilai dampak dividen, rights issue,
+  buyback, merger/akuisisi bagi pemegang saham minoritas. Gerbang
+  relevansi berbasis kata kunci deterministik; jawaban wajib JSON ketat
+  dengan sitasi tervalidasi (parser grounded dipakai bersama analis
+  berita); kegagalan apa pun berarti recuse, bukan menebak.
+- **Alert ke webhook** — alert watchlist dapat dicerminkan ke satu
+  endpoint (`INVOS_ALERT_WEBHOOK_URL`): JSON generik untuk n8n/custom,
+  atau payload Discord/Slack (`INVOS_ALERT_WEBHOOK_FORMAT`). Sekali per
+  alert, tidak pernah memblokir pengiriman Telegram.
+- **Laporan strategi backtest** — keputusan BUY yang di-replay menjadi
+  paper portfolio equal-weight berjendela tak tumpang-tindih: total
+  return, max drawdown, dan pembanding IHSG pada jendela yang sama.
+
+### Diperbaiki
+
+- Placeholder `<TICKER>` di pesan bantuan router membuat Telegram menolak
+  pesan (400 can't parse entities) — kini di-escape, plus fallback:
+  markup yang ditolak dikirim ulang sebagai teks polos.
+- `serve-telegram` keluar bersih pada Ctrl+C di Windows.
+
 ## [0.2.0] — 2026-07-19
 
 Gelombang pasca-MVP: lima fitur fase-2, semuanya lolos gerbang CI yang sama.
@@ -78,5 +110,6 @@ build image kontainer.
 - Eksekusi order. Ini alat riset dan pendukung keputusan, bukan bot
   auto-trading; setiap keluaran menyertakan disclaimer.
 
+[0.3.0]: https://github.com/mirecodex/ai-investment-os/releases/tag/v0.3.0
 [0.2.0]: https://github.com/mirecodex/ai-investment-os/releases/tag/v0.2.0
 [0.1.0]: https://github.com/mirecodex/ai-investment-os/releases/tag/v0.1.0
