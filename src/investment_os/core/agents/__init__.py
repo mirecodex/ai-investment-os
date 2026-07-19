@@ -1,4 +1,5 @@
 from investment_os.core.agents.base import Analyst, AnalystError
+from investment_os.core.agents.corporate_action import CorporateActionAnalyst
 from investment_os.core.agents.flow import ForeignFlowAnalyst
 from investment_os.core.agents.fundamental import FundamentalAnalyst
 from investment_os.core.agents.macro import MacroAnalyst
@@ -26,6 +27,7 @@ def default_analysts() -> list[Analyst]:
 __all__ = [
     "Analyst",
     "AnalystError",
+    "CorporateActionAnalyst",
     "ForeignFlowAnalyst",
     "FundamentalAnalyst",
     "LlmNewsAnalyst",
