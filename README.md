@@ -44,6 +44,7 @@ Sistem berjalan penuh offline di atas fixture, dan opsional live via
 | Backtesting point-in-time: replay komite tanpa look-ahead + kalibrasi | ✅ |
 | Analis berita LLM (opt-in, sitasi wajib, fallback deterministik) | ✅ `INVOS_LLM_ANALYSTS` |
 | Outcome tracking otomatis: sweep return terealisasi → kalibrasi | ✅ |
+| Dashboard web internal (brief, kalibrasi, riwayat, analisis on-demand) | ✅ `/` di serve-api |
 | Foreign flow & fundamental live, provider berlisensi | ⬜ butuh keputusan provider |
 | Analis LLM role lain (teknikal/fundamental), Postgres/vector store | ⬜ port sudah tersedia |
 

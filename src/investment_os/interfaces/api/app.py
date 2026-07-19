@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import HTMLResponse
 
 from investment_os import __version__
 from investment_os.app.container import Container
 from investment_os.core.service import TickerNotFoundError
 from investment_os.eval import reliability_report
+from investment_os.interfaces.api.dashboard import DASHBOARD_HTML
 
 DISCLAIMER = "Riset & edukasi, bukan nasihat investasi. Keputusan tetap tanggung jawab pengguna."
 
@@ -16,6 +18,10 @@ def create_app(container: Container) -> FastAPI:
         version=__version__,
         description=DISCLAIMER,
     )
+
+    @app.get("/", include_in_schema=False)
+    def dashboard() -> HTMLResponse:
+        return HTMLResponse(DASHBOARD_HTML)
 
     @app.get("/health")
     def health() -> dict[str, str]:
