@@ -3,7 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from investment_os.config import Settings
-from investment_os.core.agents import LlmNewsAnalyst, NewsAnalyst, default_analysts
+from investment_os.core.agents import (
+    CorporateActionAnalyst,
+    LlmNewsAnalyst,
+    NewsAnalyst,
+    default_analysts,
+)
 from investment_os.core.agents.base import Analyst
 from investment_os.core.alerts import AlertStateStore
 from investment_os.core.explain.narrator import Narrator
@@ -102,9 +107,13 @@ def _build_analysts(settings: Settings, llm: LLMClient | None) -> list[Analyst]:
     if llm is None or not settings.llm_analysts:
         return analysts
     prompts = PromptStore(settings.prompts_path)
-    return [
+    upgraded: list[Analyst] = [
         LlmNewsAnalyst(llm, prompts, fallback=analyst)
         if isinstance(analyst, NewsAnalyst)
         else analyst
         for analyst in analysts
     ]
+    # Extra seat, LLM-only: judges disclosure-style news (dilution, cash
+    # return, control changes) and recuses on any failure.
+    upgraded.append(CorporateActionAnalyst(llm, prompts))
+    return upgraded
