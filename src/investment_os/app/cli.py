@@ -74,7 +74,11 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         from investment_os.app.runtime import run_bot
 
-        asyncio.run(run_bot(settings))
+        try:
+            asyncio.run(run_bot(settings))
+        except KeyboardInterrupt:
+            # Windows: no loop signal handlers, Ctrl+C surfaces here instead.
+            print("Bot dihentikan.")
         return 0
 
     if args.command == "health":
