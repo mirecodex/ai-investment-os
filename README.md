@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/mirecodex/ai-investment-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mirecodex/ai-investment-os/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-[![Changelog](https://img.shields.io/badge/changelog-v0.1.0-informational)](CHANGELOG.md)
+[![Changelog](https://img.shields.io/badge/changelog-v0.2.0-informational)](CHANGELOG.md)
 
 AI investment research platform untuk pasar saham Indonesia (BEI/IDX).
 Bukan trading bot: sistem mengumpulkan data lewat pipeline, menjalankan
@@ -15,7 +15,7 @@ Keputusan arsitektur tercatat di [`docs/adr/`](docs/adr/).
 
 ## Status
 
-**v0.1.0** — milestone M0–M3 selesai (lihat
+**v0.2.0** — milestone M0–M3 plus gelombang fase-2 selesai (lihat
 [milestones](docs/fase-6-delivery/04-milestones.md) dan
 [CHANGELOG](CHANGELOG.md)). Seluruh gerbang CI hijau: lint, typecheck
 strict, test suite, golden regression gate, dan build image kontainer.
