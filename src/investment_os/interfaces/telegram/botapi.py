@@ -56,10 +56,18 @@ class TelegramClient:
         return result if isinstance(result, list) else []
 
     async def send_message(self, chat_id: int, text: str, *, parse_mode: str = "HTML") -> None:
-        await self._call(
-            "sendMessage",
-            {"chat_id": chat_id, "text": text, "parse_mode": parse_mode},
-        )
+        try:
+            await self._call(
+                "sendMessage",
+                {"chat_id": chat_id, "text": text, "parse_mode": parse_mode},
+            )
+        except TelegramApiError as exc:
+            # A markup bug must degrade to plain text, not lose the message.
+            if exc.status != 400 or "can't parse entities" not in exc.description:
+                raise
+            metrics.increment("telegram_parse_mode_fallbacks")
+            log.warning("telegram_parse_mode_fallback", chat_id=chat_id, error=exc.description)
+            await self._call("sendMessage", {"chat_id": chat_id, "text": text})
         metrics.increment("telegram_messages_sent")
 
     async def _call(self, method: str, params: dict[str, Any]) -> dict[str, Any]:

@@ -61,7 +61,7 @@ class CommandRouter:
     async def _analyze(self, argument: str) -> Reply:
         symbol = argument.upper()
         if not _TICKER_RE.match(symbol):
-            return Reply("Format: /analyze <TICKER> — contoh: /analyze BBCA")
+            return Reply("Format: /analyze &lt;TICKER&gt; — contoh: /analyze BBCA")
         try:
             result = await self._analysis.analyze(symbol)
         except TickerNotFoundError:
@@ -71,7 +71,7 @@ class CommandRouter:
     def _show_watchlist(self, user_id: str) -> Reply:
         items = self._watchlist.list(user_id)
         if not items:
-            return Reply("Watchlist kosong. Tambahkan dengan /add <TICKER>.")
+            return Reply("Watchlist kosong. Tambahkan dengan /add &lt;TICKER&gt;.")
         return Reply("Watchlist Anda:\n" + "\n".join(f"• {t}" for t in items))
 
     def _subscribe(self, user_id: str) -> Reply:
@@ -96,7 +96,7 @@ class CommandRouter:
         symbol = argument.upper()
         if not _TICKER_RE.match(symbol):
             verb = "/add" if add else "/remove"
-            return Reply(f"Format: {verb} <TICKER>")
+            return Reply(f"Format: {verb} &lt;TICKER&gt;")
         if add:
             changed = self._watchlist.add(user_id, symbol)
             return Reply(

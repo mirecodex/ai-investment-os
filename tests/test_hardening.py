@@ -198,3 +198,45 @@ async def test_supervisor_cleans_up_when_polling_crashes(tmp_path: Path) -> None
     assert client.closed
     with pytest.raises(sqlite3.ProgrammingError), fresh.db.transaction() as conn:
         conn.execute("SELECT 1")
+
+
+async def test_send_message_degrades_to_plain_text_on_markup_bug() -> None:
+    bodies: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        import json as _json
+
+        bodies.append(_json.loads(request.content))
+        if "parse_mode" in bodies[-1]:
+            return httpx.Response(
+                400,
+                json={
+                    "ok": False,
+                    "description": "Bad Request: can't parse entities: Unsupported start tag",
+                },
+            )
+        return httpx.Response(200, json={"ok": True, "result": {}})
+
+    client = make_client(handler)
+    await client.send_message(42, "Format: /analyze <TICKER>")
+    await client.close()
+
+    assert len(bodies) == 2
+    assert "parse_mode" not in bodies[1]  # retried plain, same text delivered
+    assert bodies[1]["text"] == "Format: /analyze <TICKER>"
+
+
+async def test_send_message_still_raises_on_other_400() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(400, json={"ok": False, "description": "Bad Request: chat not found"})
+
+    client = make_client(handler)
+    with pytest.raises(TelegramApiError):
+        await client.send_message(42, "halo")
+    await client.close()
+
+
+async def test_router_replies_never_contain_raw_placeholder_tags(container: Container) -> None:
+    for text in ("/analyze", "/add", "/remove", "/watchlist"):
+        reply = await container.router.handle("901", text)
+        assert "<TICKER>" not in reply.text
