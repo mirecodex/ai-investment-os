@@ -97,6 +97,13 @@ def _brief_job(settings: Settings, client: TelegramClient, container: Container)
 
 
 def _alert_job(settings: Settings, client: TelegramClient, container: Container) -> Job:
+    hooks = []
+    if settings.alert_webhook_url:
+        from investment_os.interfaces.webhook import WebhookNotifier
+
+        notifier = WebhookNotifier(settings.alert_webhook_url, fmt=settings.alert_webhook_format)
+        hooks.append(notifier.notify)
+
     service = AlertService(
         container.analysis,
         container.watchlist,
@@ -104,6 +111,7 @@ def _alert_job(settings: Settings, client: TelegramClient, container: Container)
         client,
         presenter.render_alert,
         kb=container.kb,
+        hooks=hooks,
     )
 
     async def action() -> None:

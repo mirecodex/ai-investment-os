@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     brief_time_wib: str = "07:30"
     # Watchlist alert sweep, post-market WIB
     alert_time_wib: str = "17:15"
+    # Mirror alerts to a webhook: generic JSON, or discord/slack payloads
+    alert_webhook_url: str | None = None
+    alert_webhook_format: str = "generic"
     # Realized-return sweep for calibration, post-market WIB
     outcome_time_wib: str = "17:45"
     outcome_horizon_days: int = 20
