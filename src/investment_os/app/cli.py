@@ -106,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "backtest":
-        from investment_os.eval import run_backtest
+        from investment_os.eval import run_backtest, strategy_report
         from investment_os.knowledge.fixtures import load_fixture_kb
 
         if settings.data_mode == "live":
@@ -141,6 +141,24 @@ def main(argv: list[str] | None = None) -> int:
                     f"  conf {bucket.low:.1f}-{bucket.high:.1f}: n={bucket.count}, "
                     f"rata2 conf {bucket.avg_confidence:.2f}, hit {bucket.hit_rate:.0%}"
                 )
+
+        first_snapshot = next(
+            (s for p in bt_kb.list_tickers() if (s := bt_kb.snapshot(p.ticker)) is not None),
+            None,
+        )
+        strategy = strategy_report(
+            bt.samples, first_snapshot.index_bars if first_snapshot else None
+        )
+        if strategy.rounds:
+            print(
+                f"Paper portfolio (BUY equal-weight, jendela tak tumpang-tindih): "
+                f"{strategy.round_count} ronde, total {strategy.strategy_total:+.1%}, "
+                f"max drawdown {strategy.max_drawdown:.1%}"
+            )
+            if strategy.index_total is not None:
+                print(f"IHSG pada jendela yang sama: {strategy.index_total:+.1%}")
+        else:
+            print("Paper portfolio: tidak ada sinyal BUY untuk di-replay.")
         print("Catatan: backtest untuk kalibrasi, bukan jaminan performa masa depan.")
         return 0
 
