@@ -53,3 +53,13 @@ def test_calibration_empty_state(client: TestClient) -> None:
     payload = client.get("/calibration", params={"horizon": "99d"}).json()
     assert payload["directional_count"] == 0
     assert payload["overall_hit_rate"] is None
+
+
+def test_dashboard_serves_self_contained_page(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    page = response.text
+    for marker in ("/brief", "/calibration", "/recommendations", "/tickers", "/analyze/"):
+        assert marker in page  # the page drives the existing JSON endpoints
+    assert "https://" not in page  # strictly self-contained: no external assets
