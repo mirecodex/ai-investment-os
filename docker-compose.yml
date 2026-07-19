@@ -12,5 +12,19 @@ services:
       - invos-var:/app/var    # SQLite: recommendations, outcomes, watchlists
     stop_grace_period: 30s
 
+  api:
+    build: .
+    image: investment-os:latest
+    restart: unless-stopped
+    command: ["investment-os", "serve-api", "--host", "0.0.0.0", "--port", "8000"]
+    env_file: .env            # set INVOS_API_AUTH=user:pass before exposing this
+    environment:
+      INVOS_ENVIRONMENT: prod
+    ports:
+      - "127.0.0.1:8000:8000" # widen to "8000:8000" only with INVOS_API_AUTH set
+    volumes:
+      - invos-var:/app/var    # same SQLite as the bot: shared history & outcomes
+    stop_grace_period: 15s
+
 volumes:
   invos-var:

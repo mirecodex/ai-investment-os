@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Query
+import base64
+import secrets
+from collections.abc import Awaitable, Callable
+
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import HTMLResponse
 
 from investment_os import __version__
@@ -12,12 +16,39 @@ from investment_os.interfaces.api.dashboard import DASHBOARD_HTML
 DISCLAIMER = "Riset & edukasi, bukan nasihat investasi. Keputusan tetap tanggung jawab pengguna."
 
 
+def _basic_auth_ok(header: str | None, expected: str) -> bool:
+    if not header or not header.startswith("Basic "):
+        return False
+    try:
+        supplied = base64.b64decode(header.removeprefix("Basic "), validate=True).decode()
+    except (ValueError, UnicodeDecodeError):
+        return False
+    return secrets.compare_digest(supplied.encode(), expected.encode())
+
+
 def create_app(container: Container) -> FastAPI:
     app = FastAPI(
         title="AI Investment OS — Internal API",
         version=__version__,
         description=DISCLAIMER,
     )
+
+    credentials = container.settings.api_auth
+    if credentials:
+
+        @app.middleware("http")
+        async def require_auth(
+            request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        ) -> Response:
+            # /health stays open for container healthchecks and probes.
+            if request.url.path != "/health" and not _basic_auth_ok(
+                request.headers.get("Authorization"), credentials
+            ):
+                return Response(
+                    status_code=401,
+                    headers={"WWW-Authenticate": 'Basic realm="investment-os"'},
+                )
+            return await call_next(request)
 
     @app.get("/", include_in_schema=False)
     def dashboard() -> HTMLResponse:

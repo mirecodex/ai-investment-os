@@ -156,16 +156,19 @@ uv run investment-os serve-api --host 127.0.0.1 --port 8000
 ```
 
 Adapter tipis di atas core yang sama dengan bot Telegram (prinsip
-hexagonal terbukti: menambah interface tanpa menyentuh core). Ditujukan
-untuk dashboard/integrasi internal — jalankan di belakang boundary
-jaringan/auth Anda sendiri.
+hexagonal terbukti: menambah interface tanpa menyentuh core). Dashboard
+web mandiri tersedia di `/` (brief, kalibrasi, riwayat, analisis
+on-demand). Set `INVOS_API_AUTH=user:pass` untuk mengunci seluruh API +
+dashboard dengan HTTP Basic auth (`/health` tetap terbuka untuk probe);
+tanpa itu, biarkan hanya di localhost/jaringan privat.
 
 ## Deployment (Docker)
 
 ```bash
 cp .env.example .env             # isi INVOS_TELEGRAM_BOT_TOKEN (+ LLM key opsional)
-make docker-up                   # build + jalankan bot (compose, restart otomatis)
+make docker-up                   # build + jalankan bot & API (compose, restart otomatis)
 make docker-logs
+# dashboard: http://127.0.0.1:8000/ — kunci dengan INVOS_API_AUTH sebelum diekspos
 ```
 
 Image berjalan non-root dengan healthcheck bawaan (`investment-os health`);
