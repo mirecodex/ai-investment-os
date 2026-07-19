@@ -18,6 +18,7 @@ log = get_logger(__name__)
 class BacktestSample:
     ticker: str
     as_of: dt.date
+    exit_date: dt.date
     verdict: Verdict
     confidence: float
     forward_return: float
@@ -68,6 +69,7 @@ async def run_backtest(
                 BacktestSample(
                     ticker=profile.ticker,
                     as_of=entry_bar.date,
+                    exit_date=exit_bar.date,
                     verdict=decision.verdict,
                     confidence=decision.confidence,
                     forward_return=exit_bar.close / entry_bar.close - 1.0,
