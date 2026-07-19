@@ -39,6 +39,10 @@ class AlertRenderer(Protocol):
     def __call__(self, ticker: str, changes: list[str], summary: str) -> str: ...
 
 
+class AlertHook(Protocol):
+    async def __call__(self, ticker: str, changes: list[str], summary: str) -> None: ...
+
+
 @dataclass(frozen=True)
 class AlertRunStats:
     tickers_checked: int
@@ -125,6 +129,7 @@ class AlertService:
         render: AlertRenderer,
         *,
         kb: KnowledgeBase | None = None,
+        hooks: list[AlertHook] | None = None,
     ) -> None:
         self._analysis = analysis
         self._watchlist = watchlist
@@ -132,6 +137,7 @@ class AlertService:
         self._sender = sender
         self._render = render
         self._kb = kb
+        self._hooks = hooks or []
 
     async def run(self, *, now: dt.datetime | None = None) -> AlertRunStats:
         now = now or dt.datetime.now(tz=dt.UTC)
@@ -176,6 +182,15 @@ class AlertService:
                 f"{decision.verdict.value} · confidence "
                 f"{decision.confidence * 100:.0f}% ({decision.confidence_band})"
             )
+            # Side channels (webhooks) fire once per alert, not per watcher,
+            # and never block chat delivery.
+            for hook in self._hooks:
+                try:
+                    await hook(ticker, changes, summary)
+                except Exception:
+                    metrics.increment("alert_hook_failures")
+                    log.exception("alert_hook_failed", ticker=ticker)
+
             text = self._render(ticker, changes, summary)
             for chat_id in chat_ids:
                 try:
