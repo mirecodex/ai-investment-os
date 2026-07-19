@@ -115,3 +115,45 @@ async def test_committee_runs_on_live_shaped_data() -> None:
     skipped = route_note.split("skipped:")[1]
     assert "fundamental" in skipped
     assert "foreign_flow" in skipped
+
+
+FULL_UNIVERSE_PATH = Path(__file__).resolve().parents[1] / "data" / "universe" / "lq45.json"
+
+KNOWN_SECTORS = {
+    "Perbankan",
+    "Telekomunikasi",
+    "Teknologi",
+    "Konsumer",
+    "Farmasi",
+    "Kesehatan",
+    "Pertambangan",
+    "Energi",
+    "Perkebunan",
+    "Otomotif & Konglomerasi",
+    "Ritel",
+    "Properti",
+    "Infrastruktur",
+    "Industri Dasar",
+}
+
+
+def test_full_lq45_universe_is_well_formed() -> None:
+    universe = UniverseConfig.load(FULL_UNIVERSE_PATH)
+    tickers = [spec.ticker for spec in universe.tickers]
+
+    assert len(tickers) == 45
+    assert len(set(tickers)) == 45
+    assert tickers == sorted(tickers)  # alphabetical keeps rebalancing diffs readable
+    for spec in universe.tickers:
+        assert len(spec.ticker) == 4 and spec.ticker.isupper() and spec.ticker.isalpha()
+        assert spec.name and spec.aliases
+        assert spec.sector in KNOWN_SECTORS, f"{spec.ticker}: sector '{spec.sector}' asing"
+    assert universe.feeds and universe.sources
+
+
+def test_full_universe_tagger_matches_aliases_not_substrings() -> None:
+    tagger = UniverseConfig.load(FULL_UNIVERSE_PATH).tagger()
+    assert tagger.tag("Laba Antam melonjak; BCA menaikkan dividen") == ["ANTM", "BBCA"]
+    assert tagger.tag("Pertambangan pasir tanpa emiten disebut") == []
+    # "Astra" must not fire on unrelated words containing the substring
+    assert "ASII" not in tagger.tag("astragalus adalah tanaman herbal")

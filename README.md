@@ -68,7 +68,8 @@ uv run investment-os backtest       # replay point-in-time + kalibrasi (fase 5)
 ```
 
 Mode live (harga EOD via Yahoo Finance + berita RSS, universe di
-`data/universe/lq45-demo.json`):
+`data/universe/lq45.json` — 45 emiten LQ45, snapshot yang dirawat manual;
+sesuaikan saat rebalancing indeks):
 
 ```bash
 uv run investment-os --live brief
